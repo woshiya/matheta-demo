@@ -26,6 +26,7 @@ import LiveSessionRoom from "./pages/teacher/LiveSessionRoom";
 import LiveSessionSummary from "./pages/teacher/LiveSessionSummary";
 import LiveSessionReport from "./pages/teacher/LiveSessionReport";
 import DiagnosticCentre from "./pages/teacher/DiagnosticCentre";
+import ProductPage from "./pages/ProductPage";
 // import Homework from "./pages/teacher/Homework";
 
 function ProtectedRoute({ children, role }) {
@@ -46,6 +47,9 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+
+        {/* Product landing */}
+        <Route path="/product" element={<ProductPage />} />
 
         {/* ✅ Public Route */}
         <Route path="/" element={<Login />} />

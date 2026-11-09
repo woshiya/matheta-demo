@@ -68,7 +68,13 @@ function Login() {
   return (
     <div style={styles.container}>
       <form onSubmit={handleLogin} style={styles.form}>
-        <h2>Matheta Login</h2>
+        <div style={styles.brandRow}>
+          <div style={styles.brandMark} aria-hidden="true" />
+          <div>
+            <h2 style={styles.title}>Matheta Login</h2>
+            <div style={styles.subTitle}>Demo mode</div>
+          </div>
+        </div>
 
         <div style={styles.segmentRow}>
           <button
@@ -106,6 +112,14 @@ function Login() {
         <button type="submit" style={styles.button}>
           Continue
         </button>
+
+        <button
+          type="button"
+          style={styles.secondaryButton}
+          onClick={() => navigate("/product")}
+        >
+          View Product Page
+        </button>
       </form>
     </div>
   );
@@ -128,6 +142,30 @@ const styles = {
     boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
     width: "300px",
   },
+  brandRow: {
+    display: "flex",
+    gap: 10,
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  brandMark: {
+    height: 28,
+    width: 28,
+    borderRadius: 10,
+    background: "linear-gradient(180deg, #111827, #0b1220)",
+    boxShadow: "0 8px 18px rgba(0,0,0,0.12)",
+    border: "1px solid #e5e7eb",
+  },
+  title: {
+    margin: 0,
+    fontSize: 18,
+  },
+  subTitle: {
+    marginTop: 2,
+    fontSize: 12,
+    color: "#6b7280",
+    fontWeight: 600,
+  },
   input: {
     marginBottom: "15px",
     padding: "10px",
@@ -141,6 +179,16 @@ const styles = {
     backgroundColor: "#2563eb",
     color: "white",
     border: "none",
+    borderRadius: 6,
+    cursor: "pointer",
+  },
+  secondaryButton: {
+    marginTop: 10,
+    padding: "10px",
+    fontSize: 14,
+    backgroundColor: "#ffffff",
+    color: "#111827",
+    border: "1px solid #d1d5db",
     borderRadius: 6,
     cursor: "pointer",
   },
