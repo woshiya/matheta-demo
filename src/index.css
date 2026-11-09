@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+/*
+  App-wide responsive defaults:
+  - Prevent flex/grid children from forcing overflow.
+  - Allow long words/emails/IDs to wrap instead of clipping.
+*/
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+/* min-width: auto on flex/grid items causes unexpected overflow */
+* {
+  min-width: 0;
+}
+
+/* Wrap long content rather than cutting it off */
+body {
+  overflow-wrap: anywhere;
+}
