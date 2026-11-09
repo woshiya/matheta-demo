@@ -29,6 +29,16 @@ export default function DiagnosticCentre() {
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState(null);
   const [showQuestions, setShowQuestions] = useState(false);
+  const [showResultsInfo, setShowResultsInfo] = useState(false);
+
+  const diagnosticsDateLabel = useMemo(() => {
+    const s = activeSession;
+    const raw = s?.started_at || s?.created_at || s?.ends_at || null;
+    if (!raw) return null;
+    const d = new Date(raw);
+    if (Number.isNaN(d.getTime())) return null;
+    return d.toLocaleString();
+  }, [activeSession]);
 
   async function loadResults(classId, sessionId) {
     const rRes = await apiFetch(
@@ -256,7 +266,27 @@ export default function DiagnosticCentre() {
       </div>
 
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <div className="px-4 py-3 border-b border-gray-100 text-sm font-semibold text-gray-900">Results</div>
+        <div className="px-4 py-3 border-b border-gray-100">
+          <div className="flex items-center justify-between gap-3">
+            <div className="text-sm font-semibold text-gray-900">Results</div>
+            <div className="flex items-center gap-3">
+              {diagnosticsDateLabel ? (
+                <div className="text-xs text-gray-600">
+                  Diagnostic date: <span className="font-medium text-gray-800">{diagnosticsDateLabel}</span>
+                </div>
+              ) : null}
+              <button
+                type="button"
+                onClick={() => setShowResultsInfo(true)}
+                className="inline-flex items-center justify-center h-8 w-8 rounded-full border border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
+                aria-label="About these results"
+                title="About these results"
+              >
+                i
+              </button>
+            </div>
+          </div>
+        </div>
         {status === "loading" ? (
           <div className="p-4 text-sm text-gray-600">Loading...</div>
         ) : results.length === 0 ? (
@@ -281,6 +311,42 @@ export default function DiagnosticCentre() {
           </div>
         )}
       </div>
+
+      {showResultsInfo ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <button
+            type="button"
+            className="absolute inset-0 bg-black/40"
+            aria-label="Close"
+            onClick={() => setShowResultsInfo(false)}
+          />
+          <div className="relative w-full max-w-xl rounded-xl bg-white border border-gray-200 shadow-lg">
+            <div className="p-5 border-b border-gray-100 flex items-start justify-between gap-4">
+              <div>
+                <div className="text-sm font-semibold text-gray-900">About These Results</div>
+                <div className="mt-1 text-xs text-gray-600">
+                  What you see here depends on whether a backend is connected.
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowResultsInfo(false)}
+                className="rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm hover:bg-gray-50"
+              >
+                Close
+              </button>
+            </div>
+            <div className="p-5 space-y-3 text-sm text-gray-800">
+              <div>
+                If this site is running in demo mode (static hosting), these diagnostic results are pre-populated sample data for each class so you can showcase the dashboard and radar charts.
+              </div>
+              <div>
+                If you connect a real backend later (set `VITE_API_BASE_URL`), results will come from real student attempts and submissions.
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
