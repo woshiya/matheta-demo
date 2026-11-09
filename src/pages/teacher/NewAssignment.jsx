@@ -3,6 +3,8 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { apiFetch } from "../../lib/api";
 import { normalizeGeneratedQuestions } from "../../lib/normalizeQuestions";
 import { MATH_DOMAINS_AI_SAFE, MATH_DOMAINS_HKDSE_FULL } from "../../lib/mathTaxonomy";
+import AIStudioModal from "../../components/AIStudioModal";
+import { appendAuditEntry } from "../../lib/auditTrail";
 
 const QUESTION_TYPES = [
   { id: "short", label: "Short" },
@@ -48,6 +50,8 @@ export default function NewAssignment() {
 
   const [generatingByIndex, setGeneratingByIndex] = useState(() => new Set());
   const [aiError, setAiError] = useState(null);
+  const [aiStudioOpen, setAiStudioOpen] = useState(false);
+  const [aiStudioCtx, setAiStudioCtx] = useState(null);
 
   const [form, setForm] = useState({
     type: presetType === "cw" ? "cw" : "hw",
@@ -511,6 +515,28 @@ export default function NewAssignment() {
         prompt: enrichedPrompt,
         questionSpecs: spec,
       };
+
+      // Open AI Studio with a transparent preview before generation.
+      setAiStudioCtx({
+        topicLabel: selectedTopicLabel,
+        useClassData: true,
+        rulesLabel: 'HKDSE-aligned',
+        difficultyLabel: q.difficulty ? String(q.difficulty) : 'medium',
+        promptPreview: [
+          `Create one ${q.difficulty} ${q.questionType} answer question.`,
+          '',
+          `Topic: ${selectedTopicLabel || '-'}`,
+          `Use class weakness data: Yes`,
+          `HKDSE style: Yes`,
+          `Include worked solution: Yes`,
+          `Teacher approval required: Yes`,
+          '',
+          'Extra teacher instruction:',
+          String(q.prompt || '').trim() || 'None',
+        ].join('\n'),
+        payload,
+      });
+      setAiStudioOpen(true);
 
       // If we already created an assignment (future multi-generate flow), we can attach it here.
       // For now, AI generation happens before save, so this remains unused.
@@ -1014,6 +1040,41 @@ export default function NewAssignment() {
           <div className="text-xs text-gray-600 pt-2">{publishBlocker}</div>
         ) : null}
       </div>
+
+      <AIStudioModal
+        open={aiStudioOpen}
+        onClose={() => setAiStudioOpen(false)}
+        context={aiStudioCtx}
+        actor={(() => {
+          try {
+            return JSON.parse(localStorage.getItem('user'));
+          } catch {
+            return null;
+          }
+        })()}
+        onDecision={({ decision, reason }) => {
+          const actor = (() => {
+            try {
+              return JSON.parse(localStorage.getItem('user'));
+            } catch {
+              return null;
+            }
+          })();
+
+          appendAuditEntry('teacher', {
+            action: 'ai_studio_decision',
+            entityType: 'question_generation',
+            entityId: aiStudioCtx?.payload?.topicKey || aiStudioCtx?.topicLabel || 'unknown',
+            actor: actor ? { id: actor.id, name: actor.name, email: actor.email, role: actor.role } : null,
+            reason: reason || '(no reason provided)',
+            summary: `Decision: ${decision}\nTopic: ${aiStudioCtx?.topicLabel || '-'}\nDomainKey: ${aiStudioCtx?.payload?.domainKey || '-'}\nTopicKey: ${aiStudioCtx?.payload?.topicKey || '-'}`,
+            before: null,
+            after: `decision=${decision}`,
+          });
+
+          setAiStudioOpen(false);
+        }}
+      />
     </div>
   );
 }

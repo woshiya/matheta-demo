@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import { httpFetch } from "../lib/http";
+import AuditTrailModal from "../components/AuditTrailModal";
 
 export default function TeacherLayout() {
   const [classes, setClasses] = useState([]);
   const [showClasses, setShowClasses] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [auditOpen, setAuditOpen] = useState(false);
 
   // Load classes for the logged-in teacher from the backend
   useEffect(() => {
@@ -185,6 +187,12 @@ export default function TeacherLayout() {
         {/* Logout */}
         <div className="p-4">
           <button
+            onClick={() => setAuditOpen(true)}
+            className="w-full text-left text-sm text-white/80 hover:text-white hover:underline"
+          >
+            Audit Trail
+          </button>
+          <button
             onClick={handleLogout}
             className="w-full text-left text-sm text-white/80 hover:text-white hover:underline"
           >
@@ -215,6 +223,8 @@ export default function TeacherLayout() {
           <Outlet />
         </div>
       </main>
+
+      <AuditTrailModal open={auditOpen} onClose={() => setAuditOpen(false)} scope="teacher" />
 
     </div>
   );
