@@ -1,6 +1,62 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { httpFetch } from "../../lib/http";
+
+function demoInterventionForClass(classId) {
+  const id = String(classId);
+  if (id === "2") {
+    return {
+      triggerSignal: "Low accuracy + slow responses",
+      topic: "Algebra - Linear Equations",
+      studentsAffected: 9,
+      reasoning:
+        "Students are spending longer than expected on linear equations and making consistent transposition/sign errors. The engine recommends scaffolding and short targeted practice before moving on.",
+      recommendations: [
+        { id: "extra_practice", type: "Practice", title: "Extra practice", subtitle: "2-mark easy questions to rebuild confidence" },
+        { id: "scaffold", type: "Scaffold", title: "Easier scaffolded question", subtitle: "Guide steps: isolate variable, check work" },
+        { id: "review", type: "Class review", title: "Review lesson", subtitle: "5-min reteach: transposition + sign" },
+        { id: "group", type: "Small group", title: "Group support", subtitle: "Pull struggling students for 1-2 examples" },
+        { id: "individual", type: "1:1", title: "Individual feedback", subtitle: "Correct misconceptions in-the-moment" },
+      ],
+    };
+  }
+  return {
+    triggerSignal: "Repeated mistakes",
+    topic: "Factorisation",
+    studentsAffected: 7,
+    reasoning:
+      "The class has repeated incorrect attempts on factorisation. Accuracy is below the mastery threshold, and several students are taking longer than expected. The engine recommends targeted interventions instead of moving directly to harder questions.",
+    recommendations: [
+      { id: "extra_practice", type: "Practice", title: "Extra practice", subtitle: "Targeted similar questions" },
+      { id: "scaffold", type: "Scaffold", title: "Easier scaffolded question", subtitle: "Break the skill into steps" },
+      { id: "review", type: "Class review", title: "Review lesson", subtitle: "Quick reteach of common error" },
+      { id: "group", type: "Small group", title: "Group support", subtitle: "Pull aside affected students" },
+      { id: "individual", type: "1:1", title: "Individual feedback", subtitle: "Coach 1-2 students now" },
+    ],
+  };
+}
+
+function RecommendationCard({ rec, onSelect }) {
+  if (!rec) return null;
+  return (
+    <button
+      type="button"
+      className="w-full text-left rounded-lg border border-gray-200 bg-white p-3 hover:bg-gray-50"
+      onClick={() => onSelect?.(rec)}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <div className="text-sm font-semibold text-gray-900">{rec.title}</div>
+          {rec.subtitle ? <div className="mt-0.5 text-xs text-gray-500">{rec.subtitle}</div> : null}
+        </div>
+        <span className="text-[11px] font-semibold text-gray-600 border border-gray-200 rounded-full px-2 py-0.5">
+          {rec.type}
+        </span>
+      </div>
+    </button>
+  );
+}
+
 export default function TeacherDashboard() {
   const [activeTab, setActiveTab] = useState("manage");
   const navigate = useNavigate();
@@ -105,6 +161,9 @@ export default function TeacherDashboard() {
     const d = new Date(value);
     return Number.isNaN(d.getTime()) ? "" : d.toLocaleDateString();
   }
+
+  const [interventionModal, setInterventionModal] = useState(null); // { classId, className }
+  const [pickedIntervention, setPickedIntervention] = useState(null);
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -413,7 +472,19 @@ export default function TeacherDashboard() {
                 </div>
 
                 {/* Action Button */}
-                <div className="flex justify-end">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-3">
+                  <button
+                    className="text-sm font-medium text-gray-900 hover:underline text-left"
+                    onClick={() => {
+                      setPickedIntervention(null);
+                      setInterventionModal({
+                        classId: cls.id,
+                        className: `${cls.name}${Array.isArray(cls.subjects) && cls.subjects.length > 0 ? ` – ${cls.subjects.join(", ")}` : ""}`,
+                      });
+                    }}
+                  >
+                    AI Intervention Recommendations →
+                  </button>
                   <button
                     className="text-sm font-medium text-gray-900 hover:underline"
                     onClick={() => navigate(`/teacher/class/${cls.id}`)}
@@ -425,6 +496,106 @@ export default function TeacherDashboard() {
             ))}
           </div>
         )}
+
+        {interventionModal ? (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+            role="dialog"
+            aria-modal="true"
+            onMouseDown={(e) => {
+              // Close when clicking backdrop.
+              if (e.target === e.currentTarget) setInterventionModal(null);
+            }}
+          >
+            <div className="w-full max-w-3xl rounded-xl bg-white border border-gray-200 shadow-xl">
+              <div className="p-4 border-b border-gray-100 flex items-start justify-between gap-4">
+                <div>
+                  <div className="text-sm font-semibold text-gray-900">AI Intervention Recommendations</div>
+                  <div className="mt-1 text-xs text-gray-600">
+                    {interventionModal.className}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-900">
+                    Teacher reviews before use
+                  </span>
+                  <button
+                    type="button"
+                    className="text-sm font-medium text-gray-700 hover:underline"
+                    onClick={() => setInterventionModal(null)}
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+
+              {(() => {
+                const engine = demoInterventionForClass(interventionModal.classId);
+                return (
+                  <div className="p-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div className="rounded-xl border border-gray-200 bg-white p-4">
+                      <div className="text-xs font-semibold text-gray-700">Trigger Signal</div>
+                      <div className="mt-1 text-sm text-gray-900">{engine.triggerSignal}</div>
+
+                      <div className="mt-4 text-xs font-semibold text-gray-700">Topic</div>
+                      <div className="mt-1 text-sm text-gray-900">{engine.topic}</div>
+
+                      <div className="mt-4 text-xs font-semibold text-gray-700">Students Affected</div>
+                      <div className="mt-1 text-sm text-gray-900">{engine.studentsAffected}</div>
+
+                      <div className="mt-4 rounded-lg border border-gray-200 bg-gray-50 p-3">
+                        <div className="text-xs font-semibold text-gray-700">AI Reasoning Summary</div>
+                        <div className="mt-2 text-sm text-gray-800">{engine.reasoning}</div>
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl border border-gray-200 bg-white p-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <div className="text-xs font-semibold text-gray-700">AI can recommend</div>
+                          <div className="mt-1 text-[11px] text-gray-500">Select one to stage an action (demo).</div>
+                        </div>
+                      </div>
+
+                      <div className="mt-3 space-y-2">
+                        {(engine.recommendations || []).map((rec) => (
+                          <RecommendationCard key={rec.id} rec={rec} onSelect={setPickedIntervention} />
+                        ))}
+                      </div>
+
+                      {pickedIntervention ? (
+                        <div className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 p-3">
+                          <div className="text-xs font-semibold text-emerald-900">Selected</div>
+                          <div className="mt-1 text-sm text-emerald-900">{pickedIntervention.title}</div>
+                          <div className="mt-3 flex items-center gap-3">
+                            <button
+                              type="button"
+                              className="px-3 py-2 rounded-md text-sm font-medium text-white bg-gray-900 hover:bg-gray-800"
+                              onClick={() => {
+                                // Demo: route teacher to assignment creation for this class.
+                                setInterventionModal(null);
+                                navigate(`/teacher/assignments/new?type=hw&classId=${encodeURIComponent(String(interventionModal.classId))}`);
+                              }}
+                            >
+                              Create Practice Assignment (Demo) →
+                            </button>
+                            <button
+                              type="button"
+                              className="px-3 py-2 rounded-md text-sm font-medium border border-gray-300 bg-white hover:bg-gray-50"
+                              onClick={() => setPickedIntervention(null)}
+                            >
+                              Clear
+                            </button>
+                          </div>
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+          </div>
+        ) : null}
       </div>
     </div>
   );
