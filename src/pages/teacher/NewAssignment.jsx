@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { apiFetch } from "../../lib/api";
+import { API_BASE_URL, apiFetch } from "../../lib/api";
 import { normalizeGeneratedQuestions } from "../../lib/normalizeQuestions";
 import { MATH_DOMAINS_AI_SAFE, MATH_DOMAINS_HKDSE_FULL } from "../../lib/mathTaxonomy";
-import AIStudioModal from "../../components/AIStudioModal";
+import AIStudioPanel from "../../components/AIStudioPanel";
 import { appendAuditEntry } from "../../lib/auditTrail";
 
 const QUESTION_TYPES = [
@@ -50,8 +50,9 @@ export default function NewAssignment() {
 
   const [generatingByIndex, setGeneratingByIndex] = useState(() => new Set());
   const [aiError, setAiError] = useState(null);
-  const [aiStudioOpen, setAiStudioOpen] = useState(false);
-  const [aiStudioCtx, setAiStudioCtx] = useState(null);
+  const [selectedQuestionIndex, setSelectedQuestionIndex] = useState(0);
+  const [aiDecision, setAiDecision] = useState('approve');
+  const [aiDecisionReason, setAiDecisionReason] = useState('');
 
   const [form, setForm] = useState({
     type: presetType === "cw" ? "cw" : "hw",
@@ -62,6 +63,60 @@ export default function NewAssignment() {
   });
 
   const [gradingMode, setGradingMode] = useState("auto"); // auto | manual
+
+  const isDemoMode = !String(API_BASE_URL || '').trim();
+
+  // Demo-only: prepopulate an AI assignment creation flow so the page showcases all UI.
+  useEffect(() => {
+    if (!isDemoMode) return;
+
+    setCreateMode((m) => (m === 'custom' ? 'ai' : m));
+    setForm((prev) => {
+      if (String(prev.title || '').trim()) return prev;
+      return {
+        ...prev,
+        classId: prev.classId || '1',
+        type: prev.type || 'cw',
+        title: 'Linear Equations (AI Studio Demo)',
+        description: 'Demo: transparent AI generation + teacher override + audit trail.',
+      };
+    });
+    setQuestions((prev) => {
+      // Only prefill if still blank.
+      const anyFilled = (prev || []).some((q) => String(q?.question || '').trim() || String(q?.prompt || '').trim());
+      if (anyFilled) return prev;
+      return [
+        makeEmptyQuestion({
+          difficulty: 'medium',
+          questionType: 'short',
+          points: 2,
+          prompt: 'HKDSE-aligned. Focus on common sign errors. Show clear steps.',
+          question: 'Solve: 2x + 3 = 11',
+          answer: 'x = 4',
+          solutionText: '2x = 8\nx = 4',
+        }),
+        makeEmptyQuestion({
+          difficulty: 'medium',
+          questionType: 'short',
+          points: 2,
+          prompt: 'Include one step that students often get wrong (transposition).',
+          question: 'Solve: 5x - 10 = 0',
+          answer: 'x = 2',
+          solutionText: '5x = 10\nx = 2',
+        }),
+        makeEmptyQuestion({
+          difficulty: 'easy',
+          questionType: 'short',
+          points: 2,
+          prompt: 'Keep it simple and confidence-building.',
+          question: 'Solve: x/3 = 4',
+          answer: 'x = 12',
+          solutionText: 'x = 4 * 3\nx = 12',
+        }),
+      ];
+    });
+    setSelectedQuestionIndex(0);
+  }, [isDemoMode]);
 
   const aiSafeDomainKeys = useMemo(() => new Set(MATH_DOMAINS_AI_SAFE.map((d) => d.id)), []);
   const aiSafeTopicKeysByDomain = useMemo(() => {
@@ -516,27 +571,7 @@ export default function NewAssignment() {
         questionSpecs: spec,
       };
 
-      // Open AI Studio with a transparent preview before generation.
-      setAiStudioCtx({
-        topicLabel: selectedTopicLabel,
-        useClassData: true,
-        rulesLabel: 'HKDSE-aligned',
-        difficultyLabel: q.difficulty ? String(q.difficulty) : 'medium',
-        promptPreview: [
-          `Create one ${q.difficulty} ${q.questionType} answer question.`,
-          '',
-          `Topic: ${selectedTopicLabel || '-'}`,
-          `Use class weakness data: Yes`,
-          `HKDSE style: Yes`,
-          `Include worked solution: Yes`,
-          `Teacher approval required: Yes`,
-          '',
-          'Extra teacher instruction:',
-          String(q.prompt || '').trim() || 'None',
-        ].join('\n'),
-        payload,
-      });
-      setAiStudioOpen(true);
+      setSelectedQuestionIndex(index);
 
       // If we already created an assignment (future multi-generate flow), we can attach it here.
       // For now, AI generation happens before save, so this remains unused.
@@ -620,7 +655,7 @@ export default function NewAssignment() {
   }
 
   return (
-    <div className="max-w-3xl">
+    <div className="max-w-6xl">
       <div className="flex items-start justify-between mb-6">
         <div>
           <h1 className="text-2xl font-semibold text-gray-900">
@@ -648,7 +683,8 @@ export default function NewAssignment() {
         </button>
       </div>
 
-      <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-5">
+      <div className="grid lg:grid-cols-5 gap-6">
+        <div className="lg:col-span-3 bg-white rounded-lg border border-gray-200 p-6 space-y-5">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {[{ id: "custom", label: "Custom Questions" }, { id: "ai", label: "AI-Generated" }, { id: "mixed", label: "Mixed" }].map((m) => (
             <button
@@ -809,7 +845,21 @@ export default function NewAssignment() {
 
             <div className="mt-4 space-y-4">
               {questions.map((q, idx) => (
-                <div key={idx} className="rounded-lg border border-gray-200 p-3">
+                <div
+                  key={idx}
+                  className={
+                    "rounded-lg border p-3 cursor-pointer transition " +
+                    (selectedQuestionIndex === idx
+                      ? "border-gray-900 ring-2 ring-gray-900/10"
+                      : "border-gray-200 hover:border-gray-300")
+                  }
+                  onClick={() => setSelectedQuestionIndex(idx)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') setSelectedQuestionIndex(idx);
+                  }}
+                >
                   <div className="flex items-center justify-between gap-3">
                     <div className="text-sm font-semibold text-gray-900">Q{idx + 1}</div>
                     <div className="flex items-center gap-3">
@@ -1039,42 +1089,68 @@ export default function NewAssignment() {
         {!canPublish && publishBlocker ? (
           <div className="text-xs text-gray-600 pt-2">{publishBlocker}</div>
         ) : null}
+        </div>
+
+        <div className="lg:col-span-2">
+          <div className="lg:sticky lg:top-6">
+            <AIStudioPanel
+              context={(() => {
+                const q = questions[selectedQuestionIndex] || makeEmptyQuestion();
+                return {
+                  topicLabel: selectedTopicLabel,
+                  useClassData: true,
+                  rulesLabel: 'HKDSE-aligned',
+                  difficultyLabel: q.difficulty ? String(q.difficulty) : 'medium',
+                  promptPreview: [
+                    `Create one ${q.difficulty} ${q.questionType} answer question.`,
+                    '',
+                    `Topic: ${selectedTopicLabel || '-'}`,
+                    `Use class weakness data: Yes`,
+                    `HKDSE style: Yes`,
+                    `Include worked solution: Yes`,
+                    `Teacher approval required: Yes`,
+                    '',
+                    'Extra teacher instruction:',
+                    String(q.prompt || '').trim() || 'None',
+                  ].join('\n'),
+                };
+              })()}
+              actor={(() => {
+                try {
+                  return JSON.parse(localStorage.getItem('user'));
+                } catch {
+                  return null;
+                }
+              })()}
+              decision={aiDecision}
+              setDecision={setAiDecision}
+              reason={aiDecisionReason}
+              setReason={setAiDecisionReason}
+              onSave={({ decision, reason }) => {
+                const actor = (() => {
+                  try {
+                    return JSON.parse(localStorage.getItem('user'));
+                  } catch {
+                    return null;
+                  }
+                })();
+                const q = questions[selectedQuestionIndex] || makeEmptyQuestion();
+
+                appendAuditEntry('teacher', {
+                  action: 'ai_studio_decision',
+                  entityType: 'assignment_question',
+                  entityId: `${form.classId || ''}:${topicKey}:${selectedQuestionIndex + 1}`,
+                  actor: actor ? { id: actor.id, name: actor.name, email: actor.email, role: actor.role } : null,
+                  reason: reason || '(no reason provided)',
+                  summary: `Decision: ${decision}\nAssignment title: ${String(form.title || '').trim() || '-'}\nTopic: ${selectedTopicLabel || '-'}\nQ${selectedQuestionIndex + 1}: ${String(q.question || '').trim() || '(not generated yet)'}`,
+                  before: null,
+                  after: `decision=${decision}`,
+                });
+              }}
+            />
+          </div>
+        </div>
       </div>
-
-      <AIStudioModal
-        open={aiStudioOpen}
-        onClose={() => setAiStudioOpen(false)}
-        context={aiStudioCtx}
-        actor={(() => {
-          try {
-            return JSON.parse(localStorage.getItem('user'));
-          } catch {
-            return null;
-          }
-        })()}
-        onDecision={({ decision, reason }) => {
-          const actor = (() => {
-            try {
-              return JSON.parse(localStorage.getItem('user'));
-            } catch {
-              return null;
-            }
-          })();
-
-          appendAuditEntry('teacher', {
-            action: 'ai_studio_decision',
-            entityType: 'question_generation',
-            entityId: aiStudioCtx?.payload?.topicKey || aiStudioCtx?.topicLabel || 'unknown',
-            actor: actor ? { id: actor.id, name: actor.name, email: actor.email, role: actor.role } : null,
-            reason: reason || '(no reason provided)',
-            summary: `Decision: ${decision}\nTopic: ${aiStudioCtx?.topicLabel || '-'}\nDomainKey: ${aiStudioCtx?.payload?.domainKey || '-'}\nTopicKey: ${aiStudioCtx?.payload?.topicKey || '-'}`,
-            before: null,
-            after: `decision=${decision}`,
-          });
-
-          setAiStudioOpen(false);
-        }}
-      />
     </div>
   );
 }
