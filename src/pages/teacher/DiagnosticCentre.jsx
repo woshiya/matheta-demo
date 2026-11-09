@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { apiFetch } from "../../lib/api";
+import { API_BASE_URL, apiFetch } from "../../lib/api";
 import DomainRadarChart from "../../components/DomainRadarChart";
 import { DIAGNOSTIC_QUESTIONS } from "../../lib/diagnosticQuestions";
 
@@ -39,6 +39,8 @@ export default function DiagnosticCentre() {
     if (Number.isNaN(d.getTime())) return null;
     return d.toLocaleString();
   }, [activeSession]);
+
+  const isDemoMode = !String(API_BASE_URL || "").trim();
 
   async function loadResults(classId, sessionId) {
     const rRes = await apiFetch(
@@ -273,6 +275,11 @@ export default function DiagnosticCentre() {
               {diagnosticsDateLabel ? (
                 <div className="text-xs text-gray-600">
                   Diagnostic date: <span className="font-medium text-gray-800">{diagnosticsDateLabel}</span>
+                  {isDemoMode ? (
+                    <span className="ml-2 inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-800">
+                      Demo data
+                    </span>
+                  ) : null}
                 </div>
               ) : null}
               <button
@@ -282,7 +289,7 @@ export default function DiagnosticCentre() {
                 aria-label="About these results"
                 title="About these results"
               >
-                i
+                ?
               </button>
             </div>
           </div>
