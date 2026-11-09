@@ -30,6 +30,27 @@ function StatCard({ label, value, hint }) {
   );
 }
 
+function RecommendationCard({ rec, onApply }) {
+  if (!rec) return null;
+  return (
+    <button
+      type="button"
+      className="w-full text-left rounded-lg border border-gray-200 bg-white p-3 hover:bg-gray-50"
+      onClick={() => onApply?.(rec)}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <div className="text-sm font-semibold text-gray-900">{rec.title}</div>
+          {rec.subtitle ? <div className="mt-0.5 text-xs text-gray-500">{rec.subtitle}</div> : null}
+        </div>
+        <span className="text-[11px] font-semibold text-gray-600 border border-gray-200 rounded-full px-2 py-0.5">
+          {rec.type}
+        </span>
+      </div>
+    </button>
+  );
+}
+
 export default function LiveSessionRoom() {
   const { sessionId } = useParams();
   const navigate = useNavigate();
@@ -42,6 +63,9 @@ export default function LiveSessionRoom() {
   const [blackboard, setBlackboard] = useState({ questionId: null, workingText: '', showAnswer: false });
   const [assignmentDetail, setAssignmentDetail] = useState(null); // { assignment, questions }
   const [assignmentLoad, setAssignmentLoad] = useState({ loading: false, error: null });
+
+  const [intervention, setIntervention] = useState(null);
+  const [interventionApplied, setInterventionApplied] = useState(null);
 
   const pacingMode = String(update?.pacingMode || 'student_paced');
   const currentQuestionIndex = Number(update?.currentQuestionIndex ?? 0);
@@ -293,9 +317,33 @@ export default function LiveSessionRoom() {
         struggling: 1,
         inactive: 0,
       },
+      interventionEngine: {
+        triggerSignal: 'Repeated mistakes',
+        topic: 'Factorisation',
+        studentsAffected: 7,
+        reasoning:
+          'The class has repeated incorrect attempts on factorisation. Accuracy is below the mastery threshold, and several students are taking longer than expected. The engine recommends targeted interventions instead of moving directly to harder questions.',
+        recommendations: [
+          { id: 'extra_practice', type: 'Practice', title: 'Extra practice', subtitle: 'Targeted similar questions' },
+          { id: 'scaffold', type: 'Scaffold', title: 'Easier scaffolded question', subtitle: 'Break the skill into steps' },
+          { id: 'review', type: 'Class review', title: 'Review lesson', subtitle: 'Quick reteach of common error' },
+          { id: 'group', type: 'Small group', title: 'Group support', subtitle: 'Pull aside affected students' },
+          { id: 'individual', type: '1:1', title: 'Individual feedback', subtitle: 'Coach 1-2 students now' },
+        ],
+      },
     });
     setBlackboard({ questionId: '2', workingText: '5x - 10 = 0\n5x = 10\nx = 2', showAnswer: true });
   }, [sessionId, navigate]);
+
+  // Intervention engine (demo + future API hook)
+  useEffect(() => {
+    const engine = update?.interventionEngine || null;
+    if (engine) {
+      setIntervention(engine);
+      return;
+    }
+    setIntervention(null);
+  }, [update?.interventionEngine]);
 
   useEffect(() => {
     async function loadAssignment() {
@@ -731,6 +779,83 @@ export default function LiveSessionRoom() {
                       </div>
                     )}
                   </div>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4 mt-6">
+                <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <h2 className="text-sm font-semibold text-gray-900">Intervention Recommendations</h2>
+                      <div className="mt-1 text-xs text-gray-500">Explain what the AI recommends after analysing live classroom signals.</div>
+                    </div>
+                    <span className="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-900">
+                      Teacher reviews before use
+                    </span>
+                  </div>
+
+                  {!intervention ? (
+                    <div className="mt-3 text-sm text-gray-500">No recommendations yet.</div>
+                  ) : (
+                    <>
+                      <div className="mt-4 grid grid-cols-1 gap-3">
+                        <label className="block">
+                          <span className="text-xs font-medium text-gray-700">Trigger Signal</span>
+                          <input
+                            value={String(intervention.triggerSignal || '')}
+                            readOnly
+                            className="mt-1 w-full border border-gray-300 rounded-md px-3 py-2 text-sm bg-gray-50"
+                          />
+                        </label>
+                        <label className="block">
+                          <span className="text-xs font-medium text-gray-700">Topic</span>
+                          <input
+                            value={String(intervention.topic || '')}
+                            readOnly
+                            className="mt-1 w-full border border-gray-300 rounded-md px-3 py-2 text-sm bg-gray-50"
+                          />
+                        </label>
+                        <label className="block">
+                          <span className="text-xs font-medium text-gray-700">Students Affected</span>
+                          <input
+                            value={String(intervention.studentsAffected ?? '')}
+                            readOnly
+                            className="mt-1 w-full border border-gray-300 rounded-md px-3 py-2 text-sm bg-gray-50"
+                          />
+                        </label>
+                      </div>
+
+                      <div className="mt-4 rounded-lg border border-gray-200 bg-gray-50 p-3">
+                        <div className="text-xs font-semibold text-gray-700">AI Reasoning Summary</div>
+                        <div className="mt-2 text-sm text-gray-800">{String(intervention.reasoning || '')}</div>
+                      </div>
+
+                      <div className="mt-4">
+                        <div className="text-xs font-semibold text-gray-700">AI can recommend</div>
+                        <div className="mt-2 space-y-2">
+                          {(intervention.recommendations || []).map((rec) => (
+                            <RecommendationCard
+                              key={rec.id}
+                              rec={rec}
+                              onApply={(picked) => {
+                                setInterventionApplied({
+                                  at: Date.now(),
+                                  picked,
+                                });
+                              }}
+                            />
+                          ))}
+                        </div>
+                        {interventionApplied ? (
+                          <div className="mt-3 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-md p-2">
+                            Selected: <span className="font-semibold">{interventionApplied.picked?.title}</span> (demo: not executed)
+                          </div>
+                        ) : (
+                          <div className="mt-3 text-xs text-gray-500">Click a recommendation to select it (demo).</div>
+                        )}
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </>
