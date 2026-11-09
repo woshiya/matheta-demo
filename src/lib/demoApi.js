@@ -495,7 +495,33 @@ export async function demoFetch(path, options = {}) {
       const id = Number(m[1]);
       const a = DEMO_ASSIGNMENTS.find((x) => x.id === id);
       if (!a) return notFound('Assignment not found');
-      return jsonResponse(a);
+      const questions = id === 1001
+        ? [
+            {
+              id: 1,
+              prompt: 'Solve: 2x + 3 = 11',
+              correct_answer: 'x = 4',
+              solution_text: '2x = 8\nx = 4',
+              points: 2,
+            },
+            {
+              id: 2,
+              prompt: 'Solve: 5x - 10 = 0',
+              correct_answer: 'x = 2',
+              solution_text: '5x = 10\nx = 2',
+              points: 2,
+            },
+            {
+              id: 3,
+              prompt: 'Solve: x/3 = 4',
+              correct_answer: 'x = 12',
+              solution_text: 'x = 4 * 3\nx = 12',
+              points: 2,
+            },
+          ]
+        : [];
+
+      return jsonResponse({ assignment: a, questions });
     }
   }
 
@@ -506,7 +532,14 @@ export async function demoFetch(path, options = {}) {
       const id = Number(m[1]);
       const a = DEMO_ASSIGNMENTS.find((x) => x.id === id);
       if (!a) return notFound('Assignment not found');
-      return jsonResponse(a);
+      const questions = id === 1001
+        ? [
+            { id: 1, prompt: 'Solve: 2x + 3 = 11', points: 2 },
+            { id: 2, prompt: 'Solve: 5x - 10 = 0', points: 2 },
+            { id: 3, prompt: 'Solve: x/3 = 4', points: 2 },
+          ]
+        : [];
+      return jsonResponse({ assignment: a, questions });
     }
   }
 
@@ -541,8 +574,11 @@ export async function demoFetch(path, options = {}) {
           sessionId: s.sessionId,
           classId: s.classId,
           teacherId: s.teacherId,
+          assignmentId: s.assignmentId,
+          assignmentTitle: s.assignmentTitle,
           startedAt: s.startedAt,
           endedAt: s.endedAt,
+          summary: s.summary,
         }))
       );
     }

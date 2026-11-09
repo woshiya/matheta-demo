@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createSocket } from '../../lib/realtime';
 import { httpFetch } from '../../lib/http';
+import { API_BASE_URL } from '../../lib/api';
 
 export default function LiveSessionSetup() {
   const navigate = useNavigate();
@@ -17,6 +18,9 @@ export default function LiveSessionSetup() {
   const [reportsStatus, setReportsStatus] = useState({ loading: false, error: null });
 
   useEffect(() => {
+    const isDemoMode = !String(API_BASE_URL || '').trim();
+    if (isDemoMode) return;
+
     const socket = createSocket();
     socketRef.current = socket;
 
@@ -177,6 +181,13 @@ export default function LiveSessionSetup() {
 
   async function startSession(e) {
     e.preventDefault();
+    const isDemoMode = !String(API_BASE_URL || '').trim();
+    if (isDemoMode) {
+      // Static showcase: jump straight to a pre-populated demo report.
+      navigate(`/teacher/live/reports/${encodeURIComponent('DEMO-SESSION-1')}`);
+      return;
+    }
+
     if (!socketRef.current) return;
 
     setStatus((s) => ({ ...s, error: null }));
@@ -205,6 +216,14 @@ export default function LiveSessionSetup() {
 
   return (
     <div className="max-w-3xl">
+      {!String(API_BASE_URL || '').trim() ? (
+        <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+          <div className="font-semibold">Demo mode</div>
+          <div className="mt-1 text-amber-900/90">
+            Interactive live sessions require a backend + websockets. Use the demo session reports below to showcase what the live analytics looks like.
+          </div>
+        </div>
+      ) : null}
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-semibold text-gray-900">Live Session Setup</h1>
@@ -220,7 +239,7 @@ export default function LiveSessionSetup() {
                 : 'bg-gray-50 text-gray-700 border-gray-200'
             }`}
           >
-            {status.connected ? 'Socket connected' : 'Socket disconnected'}
+            {!String(API_BASE_URL || '').trim() ? 'Demo (no socket)' : status.connected ? 'Socket connected' : 'Socket disconnected'}
           </span>
         </div>
       </div>
@@ -341,13 +360,15 @@ export default function LiveSessionSetup() {
         <div className="mt-6 flex items-center gap-3">
           <button
             type="submit"
-            disabled={!status.connected || !form.classId || !form.assignmentId}
+            disabled={(!String(API_BASE_URL || '').trim() ? false : !status.connected) || !form.classId || !form.assignmentId}
             className="inline-flex items-center rounded-lg bg-gray-900 text-white px-4 py-2 text-sm font-medium disabled:opacity-50"
           >
-            Start Session
+            {!String(API_BASE_URL || '').trim() ? 'View Demo Live Session' : 'Start Session'}
           </button>
           <p className="text-xs text-gray-500">
-            Session state is in-memory and resets on backend restart.
+            {!String(API_BASE_URL || '').trim()
+              ? 'This is a static demo. Use the reports to show live analytics output.'
+              : 'Session state is in-memory and resets on backend restart.'}
           </p>
         </div>
       </form>

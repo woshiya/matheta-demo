@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { createSocket } from '../../lib/realtime';
 import LiveSessionAssignmentTab from './LiveSessionAssignmentTab';
 import { httpFetch } from '../../lib/http';
+import { API_BASE_URL } from '../../lib/api';
 
 function studentLabel(studentIndex, id) {
   const key = String(id);
@@ -182,6 +183,9 @@ export default function LiveSessionRoom() {
   }, [update?.questionRaisedHands, update?.questionDifficult, update?.slowByQuestion]);
 
   useEffect(() => {
+    const isDemoMode = !String(API_BASE_URL || '').trim();
+    if (isDemoMode) return;
+
     const socket = createSocket();
     socketRef.current = socket;
 
@@ -231,6 +235,45 @@ export default function LiveSessionRoom() {
       socket.off('blackboard_update', onBlackboardUpdate);
       socket.disconnect();
     };
+  }, [sessionId]);
+
+  // Static demo: show a populated snapshot immediately.
+  useEffect(() => {
+    const isDemoMode = !String(API_BASE_URL || '').trim();
+    if (!isDemoMode) return;
+    setConnected(false);
+    setError(null);
+    setTab('insights');
+    setUpdate({
+      sessionId,
+      status: 'ended',
+      pacingMode: 'teacher_led',
+      currentQuestionIndex: 1,
+      assignmentId: 1001,
+      students: [
+        { studentId: 202, name: 'Student 3A' },
+        { studentId: 203, name: 'Student 4C' },
+      ],
+      questionRaisedHands: [
+        { questionId: 2, count: 1, studentIds: [202] },
+      ],
+      questionDifficult: [
+        { questionId: 2, count: 1, studentIds: [202] },
+      ],
+      questionAnswered: [
+        { questionId: 1, count: 2, studentIds: [202, 203] },
+        { questionId: 2, count: 1, studentIds: [203] },
+      ],
+      slowByQuestion: [
+        { questionId: 2, count: 1, studentIds: [202] },
+      ],
+      alerts: {
+        raisedHands: 1,
+        struggling: 1,
+        inactive: 0,
+      },
+    });
+    setBlackboard({ questionId: '2', workingText: '5x - 10 = 0\n5x = 10\nx = 2', showAnswer: true });
   }, [sessionId]);
 
   useEffect(() => {
@@ -424,6 +467,23 @@ export default function LiveSessionRoom() {
 
   return (
     <div className="max-w-6xl">
+      {!String(API_BASE_URL || '').trim() ? (
+        <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+          <div className="font-semibold">Demo snapshot</div>
+          <div className="mt-1 text-amber-900/90">
+            This page normally updates in real time via websockets. In the static demo, it shows a pre-populated snapshot.
+            You can view a full report at{' '}
+            <button
+              type="button"
+              className="underline font-medium"
+              onClick={() => navigate(`/teacher/live/reports/${encodeURIComponent(String(sessionId))}`)}
+            >
+              Live Session Report
+            </button>
+            .
+          </div>
+        </div>
+      ) : null}
       <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-semibold text-gray-900">Live Session</h1>
