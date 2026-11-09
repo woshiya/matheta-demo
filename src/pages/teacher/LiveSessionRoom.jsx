@@ -241,6 +241,12 @@ export default function LiveSessionRoom() {
   useEffect(() => {
     const isDemoMode = !String(API_BASE_URL || '').trim();
     if (!isDemoMode) return;
+    // Hard-code the showcase to 3A's demo session.
+    // If a different sessionId is in the URL, redirect to the canonical demo.
+    if (String(sessionId) !== 'DEMO-SESSION-1') {
+      navigate(`/teacher/live/${encodeURIComponent('DEMO-SESSION-1')}`, { replace: true });
+      return;
+    }
     setConnected(false);
     setError(null);
     setTab('insights');
@@ -250,9 +256,23 @@ export default function LiveSessionRoom() {
       pacingMode: 'teacher_led',
       currentQuestionIndex: 1,
       assignmentId: 1001,
+      activeStudents: 1,
+      raisedHandCount: 1,
+      strugglingCount: 1,
+      inactiveCount: 0,
+      lowAccuracyQuestions: [
+        { questionId: 2, accuracy: 33 },
+      ],
+      questionStats: [
+        { questionId: 1, attempts: 1, correct: 1, accuracy: 100 },
+        { questionId: 2, attempts: 3, correct: 1, accuracy: 33 },
+        { questionId: 3, attempts: 1, correct: 1, accuracy: 100 },
+      ],
+      slowStudents: [
+        { studentId: 202, name: 'Student 3A', questionId: 2, seconds: 120 },
+      ],
       students: [
         { studentId: 202, name: 'Student 3A' },
-        { studentId: 203, name: 'Student 4C' },
       ],
       questionRaisedHands: [
         { questionId: 2, count: 1, studentIds: [202] },
@@ -261,8 +281,9 @@ export default function LiveSessionRoom() {
         { questionId: 2, count: 1, studentIds: [202] },
       ],
       questionAnswered: [
-        { questionId: 1, count: 2, studentIds: [202, 203] },
-        { questionId: 2, count: 1, studentIds: [203] },
+        { questionId: 1, count: 1, studentIds: [202] },
+        { questionId: 2, count: 0, studentIds: [] },
+        { questionId: 3, count: 1, studentIds: [202] },
       ],
       slowByQuestion: [
         { questionId: 2, count: 1, studentIds: [202] },
@@ -274,7 +295,7 @@ export default function LiveSessionRoom() {
       },
     });
     setBlackboard({ questionId: '2', workingText: '5x - 10 = 0\n5x = 10\nx = 2', showAnswer: true });
-  }, [sessionId]);
+  }, [sessionId, navigate]);
 
   useEffect(() => {
     async function loadAssignment() {

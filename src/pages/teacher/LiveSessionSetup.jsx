@@ -183,8 +183,9 @@ export default function LiveSessionSetup() {
     e.preventDefault();
     const isDemoMode = !String(API_BASE_URL || '').trim();
     if (isDemoMode) {
-      // Static showcase: jump straight to a pre-populated demo report.
-      navigate(`/teacher/live/reports/${encodeURIComponent('DEMO-SESSION-1')}`);
+      // Static showcase: jump straight to a pre-populated live room (3A).
+      // This shows the live dashboard state without websockets.
+      navigate(`/teacher/live/${encodeURIComponent('DEMO-SESSION-1')}`);
       return;
     }
 
