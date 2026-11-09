@@ -682,7 +682,7 @@ export default function NewAssignment() {
           ) : null}
         </div>
         <button
-          className="text-sm font-medium text-gray-900 hover:underline"
+          className="text-sm font-medium text-gray-900 hover:underline shrink-0 whitespace-nowrap"
           onClick={() => navigate(-1)}
         >
           Cancel

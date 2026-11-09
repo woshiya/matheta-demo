@@ -324,10 +324,10 @@ export default function AIStudioPanel({
  {computedPromptPreview || 'No prompt preview available.'}
           </pre>
 
-          <div className="mt-3 flex items-center gap-2">
+          <div className="mt-3 flex flex-col sm:flex-row sm:items-center gap-2">
             <button
               type="button"
-              className="rounded-lg bg-violet-600 text-white px-3 py-2 text-sm font-semibold hover:bg-violet-500"
+              className="w-full sm:w-auto rounded-lg bg-violet-600 text-white px-3 py-2 text-sm font-semibold hover:bg-violet-500"
               onClick={() => {
                 setActiveStepId('generate');
                 onApplyPrompt?.(suggestedTeacherPrompt);
@@ -340,7 +340,7 @@ export default function AIStudioPanel({
               disabled={Boolean(generatingQuestions) || !canGenerateQuestions}
               title={!canGenerateQuestions ? String(generateQuestionsDisabledReason || '') : ''}
               className={
-                'rounded-lg px-3 py-2 text-sm font-semibold ' +
+                'w-full sm:w-auto rounded-lg px-3 py-2 text-sm font-semibold ' +
                 (Boolean(generatingQuestions) || !canGenerateQuestions
                   ? 'bg-gray-300 text-gray-700 cursor-not-allowed'
                   : 'bg-gray-900 text-white hover:bg-gray-800')
@@ -352,7 +352,7 @@ export default function AIStudioPanel({
             >
               {generatingQuestions ? 'Generating...' : 'Generate Questions'}
             </button>
-            <div className="text-[11px] text-gray-500">
+            <div className="text-[11px] text-gray-500 sm:ml-1">
               Demo: Generate Prompt writes into the selected question. Generate Questions triggers generation.
             </div>
           </div>
