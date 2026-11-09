@@ -51,8 +51,9 @@ function App() {
         {/* Product landing */}
         <Route path="/product" element={<ProductPage />} />
 
-        {/* ✅ Public Route */}
-        <Route path="/" element={<Login />} />
+        {/* Demo entry */}
+        <Route path="/" element={<Navigate to="/teacher" replace />} />
+        <Route path="/login" element={<Login />} />
 
         {/* ✅ Student Routes */}
         <Route

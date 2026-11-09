@@ -14,7 +14,7 @@ function LogoMark({ className = "" }) {
       </div>
       <div className="leading-none">
         <div className="text-sm font-semibold text-slate-900">Matheta</div>
-        <div className="text-[11px] font-medium text-slate-500">Teacher panel</div>
+        <div className="text-[11px] font-medium text-slate-500">AI-assisted classroom intelligence</div>
       </div>
     </div>
   );
@@ -142,21 +142,9 @@ export default function ProductPage() {
       <header className="sticky top-0 z-40 border-b border-slate-100 bg-white/80 backdrop-blur">
         <div className="mx-auto max-w-6xl px-4">
           <div className="flex h-16 items-center justify-between gap-4">
-            <Link to="/" className="shrink-0" aria-label="Matheta home">
+            <Link to="/product" className="shrink-0" aria-label="Matheta">
               <LogoMark />
             </Link>
-
-            <nav className="hidden md:flex items-center gap-6 text-sm font-semibold text-slate-700">
-              <a className="hover:text-slate-900" href="#features">
-                Features
-              </a>
-              <a className="hover:text-slate-900" href="#how-it-works">
-                How it works
-              </a>
-              <a className="hover:text-slate-900" href="#responsible-ai">
-                Responsible AI
-              </a>
-            </nav>
 
             <div className="flex items-center gap-2">
               <PrimaryButton onClick={() => navigate("/login")}>Try Demo →</PrimaryButton>
@@ -172,51 +160,59 @@ export default function ProductPage() {
         <div className="absolute top-[420px] left-[-160px] h-[460px] w-[460px] rounded-full bg-teal-200/30 blur-3xl" aria-hidden="true" />
 
         <div className="relative mx-auto max-w-6xl px-4 pt-14 pb-10">
-          <div className="text-center">
-            <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-semibold tracking-widest text-slate-700">
-              <span className="h-1.5 w-1.5 rounded-full bg-sky-600" aria-hidden="true" />
-              AI-ASSISTED CLASSROOM INTELLIGENCE
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+            <div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-semibold tracking-widest text-slate-700">
+                <span className="h-1.5 w-1.5 rounded-full bg-sky-600" aria-hidden="true" />
+                AI-ASSISTED CLASSROOM ANALYTICS
+              </div>
+
+              <h1 className="mt-5 text-balance text-4xl md:text-5xl font-semibold leading-[1.06] text-slate-900">
+                Turn classroom signals into <span className="text-sky-700">confident teaching</span> decisions.
+              </h1>
+
+              <p className="mt-4 max-w-xl text-balance text-sm md:text-base text-slate-700 leading-relaxed">
+                Identify learning gaps, understand the evidence, and deliver targeted maths support with teachers in
+                control.
+              </p>
+
+              <div className="mt-7 flex flex-col sm:flex-row gap-3">
+                <PrimaryButton onClick={() => navigate("/login")} className="sm:min-w-[160px]">
+                  Try Demo 2
+                </PrimaryButton>
+                <SecondaryButton
+                  className="sm:min-w-[160px]"
+                  onClick={() => {
+                    const el = document.getElementById("features");
+                    el?.scrollIntoView({ behavior: "smooth", block: "start" });
+                  }}
+                >
+                  Explore features 3
+                </SecondaryButton>
+              </div>
+
+              <div className="mt-3 text-[11px] text-slate-500">Demo placeholder</div>
+
+              <div className="mt-6 flex flex-wrap gap-2">
+                {["Explainable", "Teacher-controlled", "HKDSE maths focus"].map((x) => (
+                  <span
+                    key={x}
+                    className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-[12px] font-semibold text-slate-700"
+                  >
+                    <span className="h-1.5 w-1.5 rounded-full bg-sky-600" aria-hidden="true" />
+                    {x}
+                  </span>
+                ))}
+              </div>
             </div>
 
-            <h1 className="mt-5 text-balance text-4xl md:text-6xl font-semibold leading-[1.05] text-slate-900">
-              Clearer insights. Better support. Teachers in control.
-            </h1>
-
-            <p className="mt-5 mx-auto max-w-2xl text-balance text-base md:text-lg text-slate-700 leading-relaxed">
-              Turn live classroom activity into explainable insights and targeted maths support.
-              <br className="hidden md:block" />
-              Built for Hong Kong secondary schools and HKDSE Mathematics.
-            </p>
-
-            <div className="mt-8 flex flex-col sm:flex-row sm:justify-center gap-3">
-              <PrimaryButton onClick={() => navigate("/login")} className="sm:min-w-[180px]">
-                Try Demo →
-              </PrimaryButton>
-              <SecondaryButton
-                className="sm:min-w-[180px]"
-                onClick={() => {
-                  const el = document.getElementById("features");
-                  el?.scrollIntoView({ behavior: "smooth", block: "start" });
-                }}
-              >
-                Explore features ↓
-              </SecondaryButton>
-            </div>
-
-            <div className="mt-3 text-[11px] text-slate-500">Demo placeholder — link to be added</div>
-          </div>
-
-          {/* Hero preview */}
-          <div className="mt-10">
             <div className="relative">
               <div className="absolute -inset-4 rounded-[28px] bg-gradient-to-r from-sky-200/50 via-indigo-200/40 to-teal-200/40 blur-2xl" aria-hidden="true" />
-              <BrowserFrame title="Teacher panel · Live signals">
+              <BrowserFrame title="Student signal table">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <div className="text-sm font-semibold text-slate-900">Live Classroom Signals</div>
-                    <div className="mt-1 text-xs text-slate-600">
-                      A teacher-readable view of realtime activity with evidence attached.
-                    </div>
+                    <div className="text-sm font-semibold text-slate-900">Student signal table</div>
+                    <div className="mt-1 text-xs text-slate-600">Live classroom signals with evidence attached.</div>
                   </div>
                   <PlaceholderBadge />
                 </div>
@@ -224,7 +220,7 @@ export default function ProductPage() {
                 <div className="mt-4 grid grid-cols-1 lg:grid-cols-5 gap-4">
                   <div className="lg:col-span-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
                     <div className="flex items-center justify-between">
-                      <div className="text-xs font-semibold text-slate-700">Student signals (sample)</div>
+                      <div className="text-xs font-semibold text-slate-700">Signals (sample)</div>
                       <div className="text-[11px] font-semibold text-slate-500">Topic: Linear Equations</div>
                     </div>
                     <div className="mt-3 overflow-hidden rounded-lg border border-slate-200 bg-white">
@@ -247,7 +243,10 @@ export default function ProductPage() {
                         { s: "Andy", a: 6, acc: "8%", t: "2m 45s", m: "Transposition", sup: "Scaffold" },
                         { s: "Iris", a: 5, acc: "20%", t: "1m 55s", m: "Order", sup: "Practice" },
                       ].map((r) => (
-                        <div key={r.s} className="grid grid-cols-6 text-[12px] text-slate-800 border-b last:border-b-0 border-slate-100">
+                        <div
+                          key={r.s}
+                          className="grid grid-cols-6 text-[12px] text-slate-800 border-b last:border-b-0 border-slate-100"
+                        >
                           <div className="px-3 py-2 font-semibold">{r.s}</div>
                           <div className="px-3 py-2">{r.a}</div>
                           <div className="px-3 py-2 font-semibold text-rose-700">{r.acc}</div>
@@ -266,10 +265,8 @@ export default function ProductPage() {
                   <div className="lg:col-span-2 rounded-xl border border-slate-200 bg-white p-3">
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <div className="text-xs font-semibold text-slate-700">Intervention snippet</div>
-                        <div className="mt-1 text-[11px] text-slate-500">
-                          Explainable recommendation based on observed signals.
-                        </div>
+                        <div className="text-xs font-semibold text-slate-700">Red flag snapshot</div>
+                        <div className="mt-1 text-[11px] text-slate-500">Explainable recommendation preview.</div>
                       </div>
                       <span className="text-[11px] font-semibold text-amber-800 border border-amber-200 bg-amber-50 rounded-full px-2 py-0.5">
                         Teacher reviews
@@ -278,19 +275,9 @@ export default function ProductPage() {
                     <div className="mt-3 rounded-lg border border-slate-200 bg-slate-50 p-3">
                       <div className="text-xs font-semibold text-slate-700">Reasoning</div>
                       <div className="mt-2 text-sm text-slate-700 leading-relaxed">
-                        Emma and Andy are slow and inaccurate on linear equations. Errors cluster around transposition.
-                        Recommend a scaffolded item before moving on.
+                        Latest CW results show Emma (15%) and Andy (8%) accuracy. Suggest individual feedback before the
+                        next checkpoint.
                       </div>
-                    </div>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {["Extra practice", "Scaffolded question", "Review lesson"].map((c) => (
-                        <span
-                          key={c}
-                          className="inline-flex items-center rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700"
-                        >
-                          {c}
-                        </span>
-                      ))}
                     </div>
                   </div>
                 </div>
@@ -298,43 +285,100 @@ export default function ProductPage() {
             </div>
           </div>
 
-          {/* Benefit cards */}
-          <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-4">
-            {[
-              {
-                t: "Understand the signals",
-                d: "Translate live attempts, accuracy, time and inactivity into teacher-usable indicators.",
-              },
-              {
-                t: "See the reasoning",
-                d: "Make AI suggestions explainable with the evidence and constraints shown up front.",
-              },
-              {
-                t: "Choose the next step",
-                d: "Recommendations support judgement. Teachers decide what to do and when.",
-              },
-            ].map((b) => (
-              <div key={b.t} className="rounded-2xl border border-slate-200 bg-white p-5">
-                <div className="text-sm font-semibold text-slate-900">{b.t}</div>
-                <div className="mt-2 text-sm text-slate-700">{b.d}</div>
-              </div>
-            ))}
+          <div className="mt-10 rounded-2xl border border-slate-200 bg-white/70">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
+              {[
+                { t: "Live classroom insights", d: "Understand realtime learning signals." },
+                { t: "Curriculum-aligned analytics", d: "HKDSE-focused domain and topic views." },
+                { t: "Human-in-the-loop decisions", d: "Evidence shown before action." },
+              ].map((x, idx) => (
+                <div
+                  key={x.t}
+                  className={
+                    "p-5 " +
+                    (idx === 1 ? "md:border-x md:border-slate-200" : "") +
+                    (idx > 0 ? "border-t md:border-t-0 border-slate-200" : "")
+                  }
+                >
+                  <div className="text-sm font-semibold text-slate-900">{x.t}</div>
+                  <div className="mt-1 text-sm text-slate-700">{x.d}</div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Features intro */}
+      {/* Features */}
       <section id="features" className="scroll-mt-24">
         <div className="mx-auto max-w-6xl px-4 py-14">
-          <h2 className="text-2xl md:text-4xl font-semibold text-slate-900">Features that turn information into action.</h2>
-          <p className="mt-4 max-w-2xl text-sm md:text-base text-slate-700 leading-relaxed">
-            Go beyond generated content with curriculum-aligned analytics and human-led decision support.
-          </p>
+          <div className="text-center">
+            <SectionLabel>See the gaps. Act earlier.</SectionLabel>
+            <h2 className="mt-3 text-2xl md:text-4xl font-semibold text-slate-900">
+              Every student needs direction. Every teacher needs clarity.
+            </h2>
+          </div>
+
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="rounded-2xl border border-slate-200 bg-white p-6">
+              <div className="text-sm font-semibold text-slate-900">For teachers</div>
+              <div className="mt-3 space-y-2 text-sm text-slate-700">
+                <Check>Spot topic weaknesses in busy classes</Check>
+                <Check>Reduce routine analysis and differentiated-practice workload</Check>
+                <Check>Make decisions with visible evidence and constraints</Check>
+              </div>
+            </div>
+            <div className="rounded-2xl border border-slate-200 bg-white p-6">
+              <div className="text-sm font-semibold text-slate-900">For students</div>
+              <div className="mt-3 space-y-2 text-sm text-slate-700">
+                <Check>Get timely, personalised follow-up</Check>
+                <Check>Address learning gaps before they compound</Check>
+                <Check>Build confidence with scaffolded support</Check>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-10 rounded-2xl border border-slate-200 bg-sky-50 p-6">
+            <div className="text-sm font-semibold text-slate-900">How it works: From live activity to targeted support.</div>
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-4 gap-4">
+              {[
+                {
+                  n: "01",
+                  t: "Live signals",
+                  d: "Attempts, accuracy, response time and inactivity",
+                },
+                {
+                  n: "02",
+                  t: "Analytics engine",
+                  d: "Find topic-level patterns and learning gaps",
+                },
+                {
+                  n: "03",
+                  t: "Teacher decision",
+                  d: "Review, edit, approve or reject",
+                },
+                {
+                  n: "04",
+                  t: "Student follow-up",
+                  d: "Deliver practice, scaffolding and feedback",
+                },
+              ].map((s) => (
+                <div key={s.n} className="rounded-xl border border-slate-200 bg-white p-4">
+                  <div className="text-xs font-semibold text-slate-500">{s.n}</div>
+                  <div className="mt-2 text-sm font-semibold text-slate-900">{s.t}</div>
+                  <div className="mt-1 text-xs text-slate-600">{s.d}</div>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 text-[11px] text-slate-600">
+              AI supports teacher judgement. It does not replace it.
+            </div>
+          </div>
         </div>
       </section>
 
       {/* 01 Live analytics */}
-      <section className="mx-auto max-w-6xl px-4 pb-14">
+      <section id="faq" className="mx-auto max-w-6xl px-4 pb-14">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
           <div className="rounded-3xl border border-slate-200 bg-sky-50 p-6">
             <BrowserFrame title="Live analytics · Student signals">
@@ -409,7 +453,7 @@ export default function ProductPage() {
       </section>
 
       {/* 03 AI Studio */}
-      <section id="how-it-works" className="scroll-mt-24 bg-gradient-to-b from-sky-50 to-white">
+      <section className="bg-gradient-to-b from-sky-50 to-white">
         <div className="mx-auto max-w-6xl px-4 py-14">
           <SectionLabel>03 / AI Studio</SectionLabel>
           <h3 className="mt-3 text-2xl md:text-4xl font-semibold text-slate-900">No black box. A process you can understand.</h3>
@@ -538,7 +582,7 @@ export default function ProductPage() {
       </section>
 
       {/* 05 Teacher control */}
-      <section id="responsible-ai" className="scroll-mt-24 mx-auto max-w-6xl px-4 pb-14">
+      <section className="mx-auto max-w-6xl px-4 pb-14">
         <div className="rounded-3xl bg-slate-950 p-8 md:p-10 text-white relative overflow-hidden">
           <div className="absolute -top-40 right-[-160px] h-[420px] w-[420px] rounded-full bg-sky-700/25 blur-3xl" aria-hidden="true" />
           <div className="absolute bottom-[-220px] left-[-180px] h-[520px] w-[520px] rounded-full bg-indigo-700/25 blur-3xl" aria-hidden="true" />
@@ -663,11 +707,8 @@ export default function ProductPage() {
               <a className="hover:text-slate-900" href="#features">
                 Features
               </a>
-              <a className="hover:text-slate-900" href="#how-it-works">
-                How it works
-              </a>
-              <a className="hover:text-slate-900" href="#responsible-ai">
-                Responsible AI
+              <a className="hover:text-slate-900" href="#faq">
+                FAQ
               </a>
             </div>
           </div>
