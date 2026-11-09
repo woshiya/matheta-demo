@@ -66,11 +66,17 @@ export default function NewAssignment() {
 
   const isDemoMode = !String(API_BASE_URL || '').trim();
 
-  // Demo-only: prepopulate an AI assignment creation flow so the page showcases all UI.
+  const showAIStudio = createMode === 'ai' || createMode === 'mixed';
+
+  // Demo-only: prepopulate an AI assignment creation flow once the teacher chooses AI/Mixed mode.
+  // (AI Studio should not show in Custom mode.)
   useEffect(() => {
     if (!isDemoMode) return;
+    if (createMode !== 'ai' && createMode !== 'mixed') return;
 
-    setCreateMode((m) => (m === 'custom' ? 'ai' : m));
+    const demoPrompt =
+      'Create HKDSE aligned questions worth 2 marks for easy level for Algebra - Linear Equations.';
+
     setForm((prev) => {
       if (String(prev.title || '').trim()) return prev;
       return {
@@ -87,19 +93,19 @@ export default function NewAssignment() {
       if (anyFilled) return prev;
       return [
         makeEmptyQuestion({
-          difficulty: 'medium',
+          difficulty: 'easy',
           questionType: 'short',
           points: 2,
-          prompt: 'HKDSE-aligned. Focus on common sign errors. Show clear steps.',
+          prompt: demoPrompt,
           question: 'Solve: 2x + 3 = 11',
           answer: 'x = 4',
           solutionText: '2x = 8\nx = 4',
         }),
         makeEmptyQuestion({
-          difficulty: 'medium',
+          difficulty: 'easy',
           questionType: 'short',
           points: 2,
-          prompt: 'Include one step that students often get wrong (transposition).',
+          prompt: demoPrompt,
           question: 'Solve: 5x - 10 = 0',
           answer: 'x = 2',
           solutionText: '5x = 10\nx = 2',
@@ -108,7 +114,7 @@ export default function NewAssignment() {
           difficulty: 'easy',
           questionType: 'short',
           points: 2,
-          prompt: 'Keep it simple and confidence-building.',
+          prompt: demoPrompt,
           question: 'Solve: x/3 = 4',
           answer: 'x = 12',
           solutionText: 'x = 4 * 3\nx = 12',
@@ -116,7 +122,7 @@ export default function NewAssignment() {
       ];
     });
     setSelectedQuestionIndex(0);
-  }, [isDemoMode]);
+  }, [isDemoMode, createMode]);
 
   const aiSafeDomainKeys = useMemo(() => new Set(MATH_DOMAINS_AI_SAFE.map((d) => d.id)), []);
   const aiSafeTopicKeysByDomain = useMemo(() => {
@@ -654,8 +660,8 @@ export default function NewAssignment() {
     }
   }
 
-  return (
-    <div className="max-w-6xl">
+  const mainForm = (
+    <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-5">
       <div className="flex items-start justify-between mb-6">
         <div>
           <h1 className="text-2xl font-semibold text-gray-900">
@@ -683,9 +689,7 @@ export default function NewAssignment() {
         </button>
       </div>
 
-      <div className="grid lg:grid-cols-5 gap-6">
-        <div className="lg:col-span-3 bg-white rounded-lg border border-gray-200 p-6 space-y-5">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {[{ id: "custom", label: "Custom Questions" }, { id: "ai", label: "AI-Generated" }, { id: "mixed", label: "Mixed" }].map((m) => (
             <button
               key={m.id}
@@ -1089,68 +1093,77 @@ export default function NewAssignment() {
         {!canPublish && publishBlocker ? (
           <div className="text-xs text-gray-600 pt-2">{publishBlocker}</div>
         ) : null}
-        </div>
+    </div>
+  );
 
-        <div className="lg:col-span-2">
-          <div className="lg:sticky lg:top-6">
-            <AIStudioPanel
-              context={(() => {
-                const q = questions[selectedQuestionIndex] || makeEmptyQuestion();
-                return {
-                  topicLabel: selectedTopicLabel,
-                  useClassData: true,
-                  rulesLabel: 'HKDSE-aligned',
-                  difficultyLabel: q.difficulty ? String(q.difficulty) : 'medium',
-                  promptPreview: [
-                    `Create one ${q.difficulty} ${q.questionType} answer question.`,
-                    '',
-                    `Topic: ${selectedTopicLabel || '-'}`,
-                    `Use class weakness data: Yes`,
-                    `HKDSE style: Yes`,
-                    `Include worked solution: Yes`,
-                    `Teacher approval required: Yes`,
-                    '',
-                    'Extra teacher instruction:',
-                    String(q.prompt || '').trim() || 'None',
-                  ].join('\n'),
-                };
-              })()}
-              actor={(() => {
-                try {
-                  return JSON.parse(localStorage.getItem('user'));
-                } catch {
-                  return null;
-                }
-              })()}
-              decision={aiDecision}
-              setDecision={setAiDecision}
-              reason={aiDecisionReason}
-              setReason={setAiDecisionReason}
-              onSave={({ decision, reason }) => {
-                const actor = (() => {
+  return (
+    <div className="max-w-6xl">
+      {showAIStudio ? (
+        <div className="grid lg:grid-cols-5 gap-6">
+          <div className="lg:col-span-3">{mainForm}</div>
+          <div className="lg:col-span-2">
+            <div className="lg:sticky lg:top-6">
+              <AIStudioPanel
+                context={(() => {
+                  const q = questions[selectedQuestionIndex] || makeEmptyQuestion();
+                  return {
+                    topicLabel: selectedTopicLabel,
+                    useClassData: true,
+                    rulesLabel: 'HKDSE-aligned',
+                    difficultyLabel: q.difficulty ? String(q.difficulty) : 'medium',
+                    promptPreview: [
+                      `Create one ${q.difficulty} ${q.questionType} answer question (${q.points} marks).`,
+                      '',
+                      `Topic: ${selectedTopicLabel || '-'}`,
+                      `Use class weakness data: Yes`,
+                      `HKDSE style: Yes`,
+                      `Include worked solution: Yes`,
+                      `Teacher approval required: Yes`,
+                      '',
+                      'Extra teacher instruction:',
+                      String(q.prompt || '').trim() || 'None',
+                    ].join('\n'),
+                  };
+                })()}
+                actor={(() => {
                   try {
                     return JSON.parse(localStorage.getItem('user'));
                   } catch {
                     return null;
                   }
-                })();
-                const q = questions[selectedQuestionIndex] || makeEmptyQuestion();
+                })()}
+                decision={aiDecision}
+                setDecision={setAiDecision}
+                reason={aiDecisionReason}
+                setReason={setAiDecisionReason}
+                onSave={({ decision, reason }) => {
+                  const actor = (() => {
+                    try {
+                      return JSON.parse(localStorage.getItem('user'));
+                    } catch {
+                      return null;
+                    }
+                  })();
+                  const q = questions[selectedQuestionIndex] || makeEmptyQuestion();
 
-                appendAuditEntry('teacher', {
-                  action: 'ai_studio_decision',
-                  entityType: 'assignment_question',
-                  entityId: `${form.classId || ''}:${topicKey}:${selectedQuestionIndex + 1}`,
-                  actor: actor ? { id: actor.id, name: actor.name, email: actor.email, role: actor.role } : null,
-                  reason: reason || '(no reason provided)',
-                  summary: `Decision: ${decision}\nAssignment title: ${String(form.title || '').trim() || '-'}\nTopic: ${selectedTopicLabel || '-'}\nQ${selectedQuestionIndex + 1}: ${String(q.question || '').trim() || '(not generated yet)'}`,
-                  before: null,
-                  after: `decision=${decision}`,
-                });
-              }}
-            />
+                  appendAuditEntry('teacher', {
+                    action: 'ai_studio_decision',
+                    entityType: 'assignment_question',
+                    entityId: `${form.classId || ''}:${topicKey}:${selectedQuestionIndex + 1}`,
+                    actor: actor ? { id: actor.id, name: actor.name, email: actor.email, role: actor.role } : null,
+                    reason: reason || '(no reason provided)',
+                    summary: `Decision: ${decision}\nAssignment title: ${String(form.title || '').trim() || '-'}\nTopic: ${selectedTopicLabel || '-'}\nQ${selectedQuestionIndex + 1}: ${String(q.question || '').trim() || '(not generated yet)'}`,
+                    before: null,
+                    after: `decision=${decision}`,
+                  });
+                }}
+              />
+            </div>
           </div>
         </div>
-      </div>
+      ) : (
+        mainForm
+      )}
     </div>
   );
 }
