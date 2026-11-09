@@ -12,11 +12,75 @@ function demoInterventionForClass(classId) {
       reasoning:
         "Students are spending longer than expected on linear equations and making consistent transposition/sign errors. The engine recommends scaffolding and short targeted practice before moving on.",
       recommendations: [
-        { id: "extra_practice", type: "Practice", title: "Extra practice", subtitle: "2-mark easy questions to rebuild confidence" },
-        { id: "scaffold", type: "Scaffold", title: "Easier scaffolded question", subtitle: "Guide steps: isolate variable, check work" },
-        { id: "review", type: "Class review", title: "Review lesson", subtitle: "5-min reteach: transposition + sign" },
-        { id: "group", type: "Small group", title: "Group support", subtitle: "Pull struggling students for 1-2 examples" },
-        { id: "individual", type: "1:1", title: "Individual feedback", subtitle: "Correct misconceptions in-the-moment" },
+        {
+          id: "extra_practice",
+          type: "Practice",
+          title: "Extra practice",
+          subtitle: "2-mark easy questions to rebuild confidence",
+          evidenceTitle: "Latest CW results (Linear Equations)",
+          evidenceNotes: "Students below are far under the class average and show repeated sign/transposition errors.",
+          students: [
+            { name: "Emma", cwAccuracy: 15, hwAccuracy: 22 },
+            { name: "Andy", cwAccuracy: 8, hwAccuracy: 18 },
+            { name: "Iris", cwAccuracy: 20, hwAccuracy: 30 },
+          ],
+          nextAction: { id: "create_assignment", label: "Create Practice Assignment (Demo) \u2192" },
+        },
+        {
+          id: "scaffold",
+          type: "Scaffold",
+          title: "Easier scaffolded question",
+          subtitle: "Guide steps: isolate variable, check work",
+          evidenceTitle: "Common error pattern",
+          evidenceNotes: "Most wrong answers happen when moving terms across the equals sign.",
+          students: [
+            { name: "Emma", cwAccuracy: 15, hwAccuracy: 22 },
+            { name: "Andy", cwAccuracy: 8, hwAccuracy: 18 },
+          ],
+          nextAction: { id: "create_assignment", label: "Create Scaffold Practice (Demo) \u2192" },
+        },
+        {
+          id: "review",
+          type: "Class review",
+          title: "Review lesson",
+          subtitle: "5-min reteach: transposition + sign",
+          evidenceTitle: "Class signal",
+          evidenceNotes: "Class accuracy dropped below mastery threshold and time-per-question increased (demo).",
+          students: [
+            { name: "Emma", cwAccuracy: 15, hwAccuracy: 22 },
+            { name: "Andy", cwAccuracy: 8, hwAccuracy: 18 },
+            { name: "Jason", cwAccuracy: 35, hwAccuracy: 40 },
+          ],
+          nextAction: { id: "open_lesson", label: "Open Mini Lesson Plan (Demo)" },
+        },
+        {
+          id: "group",
+          type: "Small group",
+          title: "Group support",
+          subtitle: "Pull struggling students for 1-2 examples",
+          evidenceTitle: "Students flagged (slow + low accuracy)",
+          evidenceNotes: "These students are both slow and inaccurate on the topic.",
+          students: [
+            { name: "Emma", cwAccuracy: 15, hwAccuracy: 22 },
+            { name: "Andy", cwAccuracy: 8, hwAccuracy: 18 },
+            { name: "Iris", cwAccuracy: 20, hwAccuracy: 30 },
+            { name: "Jason", cwAccuracy: 35, hwAccuracy: 40 },
+          ],
+          nextAction: { id: "stage_group", label: "Create Group Plan (Demo)" },
+        },
+        {
+          id: "individual",
+          type: "1:1",
+          title: "Individual feedback",
+          subtitle: "Correct misconceptions in-the-moment",
+          evidenceTitle: "Highest priority students",
+          evidenceNotes: "Emma and Andy need immediate coaching. Latest CW accuracy: Emma 15%, Andy 8%.",
+          students: [
+            { name: "Emma", cwAccuracy: 15, hwAccuracy: 22 },
+            { name: "Andy", cwAccuracy: 8, hwAccuracy: 18 },
+          ],
+          nextAction: { id: "open_feedback", label: "Open Feedback Notes (Demo)" },
+        },
       ],
     };
   }
@@ -27,21 +91,88 @@ function demoInterventionForClass(classId) {
     reasoning:
       "The class has repeated incorrect attempts on factorisation. Accuracy is below the mastery threshold, and several students are taking longer than expected. The engine recommends targeted interventions instead of moving directly to harder questions.",
     recommendations: [
-      { id: "extra_practice", type: "Practice", title: "Extra practice", subtitle: "Targeted similar questions" },
-      { id: "scaffold", type: "Scaffold", title: "Easier scaffolded question", subtitle: "Break the skill into steps" },
-      { id: "review", type: "Class review", title: "Review lesson", subtitle: "Quick reteach of common error" },
-      { id: "group", type: "Small group", title: "Group support", subtitle: "Pull aside affected students" },
-      { id: "individual", type: "1:1", title: "Individual feedback", subtitle: "Coach 1-2 students now" },
+      {
+        id: "extra_practice",
+        type: "Practice",
+        title: "Extra practice",
+        subtitle: "Targeted similar questions",
+        evidenceTitle: "Latest HW results (Factorisation)",
+        evidenceNotes: "Students below missed common factor and sign handling questions.",
+        students: [
+          { name: "Emma", hwAccuracy: 28, cwAccuracy: 35 },
+          { name: "Andy", hwAccuracy: 18, cwAccuracy: 30 },
+          { name: "Chloe", hwAccuracy: 32, cwAccuracy: 42 },
+        ],
+        nextAction: { id: "create_assignment", label: "Create Practice Assignment (Demo) \u2192" },
+      },
+      {
+        id: "scaffold",
+        type: "Scaffold",
+        title: "Easier scaffolded question",
+        subtitle: "Break the skill into steps",
+        evidenceTitle: "Observed misconception",
+        evidenceNotes: "Students can expand but struggle to factorise back; add step-by-step prompts.",
+        students: [
+          { name: "Emma", hwAccuracy: 28, cwAccuracy: 35 },
+          { name: "Andy", hwAccuracy: 18, cwAccuracy: 30 },
+        ],
+        nextAction: { id: "create_assignment", label: "Create Scaffold Practice (Demo) \u2192" },
+      },
+      {
+        id: "review",
+        type: "Class review",
+        title: "Review lesson",
+        subtitle: "Quick reteach of common error",
+        evidenceTitle: "Class signal",
+        evidenceNotes: "Accuracy is below threshold and time-per-question is rising (demo).",
+        students: [
+          { name: "Emma", hwAccuracy: 28, cwAccuracy: 35 },
+          { name: "Andy", hwAccuracy: 18, cwAccuracy: 30 },
+          { name: "Ben", hwAccuracy: 40, cwAccuracy: 45 },
+        ],
+        nextAction: { id: "open_lesson", label: "Open Mini Lesson Plan (Demo)" },
+      },
+      {
+        id: "group",
+        type: "Small group",
+        title: "Group support",
+        subtitle: "Pull aside affected students",
+        evidenceTitle: "Students affected",
+        evidenceNotes: "Suggested small group to address a shared misconception.",
+        students: [
+          { name: "Emma", hwAccuracy: 28, cwAccuracy: 35 },
+          { name: "Andy", hwAccuracy: 18, cwAccuracy: 30 },
+          { name: "Chloe", hwAccuracy: 32, cwAccuracy: 42 },
+          { name: "Ben", hwAccuracy: 40, cwAccuracy: 45 },
+        ],
+        nextAction: { id: "stage_group", label: "Create Group Plan (Demo)" },
+      },
+      {
+        id: "individual",
+        type: "1:1",
+        title: "Individual feedback",
+        subtitle: "Coach 1-2 students now",
+        evidenceTitle: "Highest priority students",
+        evidenceNotes: "Emma and Andy are furthest behind and need immediate feedback.",
+        students: [
+          { name: "Emma", hwAccuracy: 28, cwAccuracy: 35 },
+          { name: "Andy", hwAccuracy: 18, cwAccuracy: 30 },
+        ],
+        nextAction: { id: "open_feedback", label: "Open Feedback Notes (Demo)" },
+      },
     ],
   };
 }
 
-function RecommendationCard({ rec, onSelect }) {
+function RecommendationCard({ rec, onSelect, selected }) {
   if (!rec) return null;
   return (
     <button
       type="button"
-      className="w-full text-left rounded-lg border border-gray-200 bg-white p-3 hover:bg-gray-50"
+      className={
+        "w-full text-left rounded-lg border bg-white p-3 hover:bg-gray-50 " +
+        (selected ? "border-emerald-300 ring-2 ring-emerald-200/60" : "border-gray-200")
+      }
       onClick={() => onSelect?.(rec)}
     >
       <div className="flex items-start justify-between gap-3">
@@ -163,7 +294,8 @@ export default function TeacherDashboard() {
   }
 
   const [interventionModal, setInterventionModal] = useState(null); // { classId, className }
-  const [pickedIntervention, setPickedIntervention] = useState(null);
+  const [pickedInterventionId, setPickedInterventionId] = useState(null);
+  const [stagedAction, setStagedAction] = useState(null);
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -476,7 +608,8 @@ export default function TeacherDashboard() {
                   <button
                     className="text-sm font-medium text-gray-900 hover:underline text-left"
                     onClick={() => {
-                      setPickedIntervention(null);
+                      setPickedInterventionId(null);
+                      setStagedAction(null);
                       setInterventionModal({
                         classId: cls.id,
                         className: `${cls.name}${Array.isArray(cls.subjects) && cls.subjects.length > 0 ? ` – ${cls.subjects.join(", ")}` : ""}`,
@@ -531,6 +664,7 @@ export default function TeacherDashboard() {
 
               {(() => {
                 const engine = demoInterventionForClass(interventionModal.classId);
+                const selectedRec = (engine.recommendations || []).find((r) => r.id === pickedInterventionId) || null;
                 return (
                   <div className="p-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <div className="rounded-xl border border-gray-200 bg-white p-4">
@@ -559,34 +693,108 @@ export default function TeacherDashboard() {
 
                       <div className="mt-3 space-y-2">
                         {(engine.recommendations || []).map((rec) => (
-                          <RecommendationCard key={rec.id} rec={rec} onSelect={setPickedIntervention} />
+                          <RecommendationCard
+                            key={rec.id}
+                            rec={rec}
+                            selected={rec.id === pickedInterventionId}
+                            onSelect={(r) => {
+                              setStagedAction(null);
+                              setPickedInterventionId(r?.id || null);
+                            }}
+                          />
                         ))}
                       </div>
 
-                      {pickedIntervention ? (
+                      {selectedRec ? (
                         <div className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 p-3">
                           <div className="text-xs font-semibold text-emerald-900">Selected</div>
-                          <div className="mt-1 text-sm text-emerald-900">{pickedIntervention.title}</div>
-                          <div className="mt-3 flex items-center gap-3">
+                          <div className="mt-1 text-sm text-emerald-900">{selectedRec.title}</div>
+
+                          {selectedRec.evidenceTitle || selectedRec.evidenceNotes || (selectedRec.students || []).length ? (
+                            <div className="mt-3 rounded-lg border border-emerald-200 bg-white p-3">
+                              <div className="text-xs font-semibold text-gray-900">{selectedRec.evidenceTitle || 'Evidence'}</div>
+                              {selectedRec.evidenceNotes ? (
+                                <div className="mt-1 text-xs text-gray-700">{selectedRec.evidenceNotes}</div>
+                              ) : null}
+                              {(selectedRec.students || []).length ? (
+                                <div className="mt-3 space-y-2">
+                                  {(selectedRec.students || []).map((s) => (
+                                    <div key={s.name} className="flex items-center justify-between text-sm">
+                                      <div className="text-gray-900 font-medium">{s.name}</div>
+                                      <div className="text-gray-700 text-xs">
+                                        {typeof s.cwAccuracy === 'number' ? `Latest CW: ${s.cwAccuracy}%` : null}
+                                        {typeof s.cwAccuracy === 'number' && typeof s.hwAccuracy === 'number' ? ' · ' : null}
+                                        {typeof s.hwAccuracy === 'number' ? `Latest HW: ${s.hwAccuracy}%` : null}
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : null}
+                            </div>
+                          ) : null}
+
+                          <div className="mt-3 flex flex-col sm:flex-row sm:items-center gap-2">
                             <button
                               type="button"
-                              className="px-3 py-2 rounded-md text-sm font-medium text-white bg-gray-900 hover:bg-gray-800"
+                              className="w-full sm:w-auto px-3 py-2 rounded-md text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 whitespace-nowrap"
                               onClick={() => {
-                                // Demo: route teacher to assignment creation for this class.
-                                setInterventionModal(null);
-                                navigate(`/teacher/assignments/new?type=hw&classId=${encodeURIComponent(String(interventionModal.classId))}`);
+                                const action = selectedRec?.nextAction?.id;
+                                if (action === 'create_assignment') {
+                                  setInterventionModal(null);
+                                  navigate(`/teacher/assignments/new?type=hw&classId=${encodeURIComponent(String(interventionModal.classId))}`);
+                                  return;
+                                }
+
+                                if (action === 'open_lesson') {
+                                  setStagedAction({
+                                    title: 'Mini lesson plan (demo)',
+                                    body: 'Demo: would open a 5-minute reteach plan and key misconceptions to address.',
+                                  });
+                                  return;
+                                }
+
+                                if (action === 'stage_group') {
+                                  setStagedAction({
+                                    title: 'Small group plan (demo)',
+                                    body: 'Demo: would create a 10-minute small-group script and targeted examples for the listed students.',
+                                  });
+                                  return;
+                                }
+
+                                if (action === 'open_feedback') {
+                                  setStagedAction({
+                                    title: 'Feedback notes (demo)',
+                                    body: 'Demo: would open suggested 1:1 coaching notes and a quick re-check item.',
+                                  });
+                                  return;
+                                }
+
+                                setStagedAction({
+                                  title: 'Action staged (demo)',
+                                  body: 'Demo: action would be executed here.',
+                                });
                               }}
                             >
-                              Create Practice Assignment (Demo) →
+                              {String(selectedRec?.nextAction?.label || 'Stage Action (Demo)')}
                             </button>
                             <button
                               type="button"
-                              className="px-3 py-2 rounded-md text-sm font-medium border border-gray-300 bg-white hover:bg-gray-50"
-                              onClick={() => setPickedIntervention(null)}
+                              className="w-full sm:w-auto px-3 py-2 rounded-md text-sm font-medium border border-gray-300 bg-white hover:bg-gray-50 whitespace-nowrap shrink-0"
+                              onClick={() => {
+                                setStagedAction(null);
+                                setPickedInterventionId(null);
+                              }}
                             >
                               Clear
                             </button>
                           </div>
+
+                          {stagedAction ? (
+                            <div className="mt-3 rounded-lg border border-emerald-200 bg-white p-3">
+                              <div className="text-xs font-semibold text-gray-900">{stagedAction.title}</div>
+                              <div className="mt-1 text-xs text-gray-700">{stagedAction.body}</div>
+                            </div>
+                          ) : null}
                         </div>
                       ) : null}
                     </div>

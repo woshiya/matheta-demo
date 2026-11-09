@@ -324,10 +324,10 @@ export default function AIStudioPanel({
  {computedPromptPreview || 'No prompt preview available.'}
           </pre>
 
-          <div className="mt-3 flex flex-col sm:flex-row sm:items-center gap-2">
+          <div className="mt-3 flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-2">
             <button
               type="button"
-              className="w-full sm:w-auto rounded-lg bg-violet-600 text-white px-3 py-2 text-sm font-semibold hover:bg-violet-500"
+              className="w-full sm:w-auto sm:min-w-[160px] rounded-lg bg-violet-600 text-white px-4 py-2 text-sm font-semibold hover:bg-violet-500 whitespace-nowrap"
               onClick={() => {
                 setActiveStepId('generate');
                 onApplyPrompt?.(suggestedTeacherPrompt);
@@ -340,7 +340,7 @@ export default function AIStudioPanel({
               disabled={Boolean(generatingQuestions) || !canGenerateQuestions}
               title={!canGenerateQuestions ? String(generateQuestionsDisabledReason || '') : ''}
               className={
-                'w-full sm:w-auto rounded-lg px-3 py-2 text-sm font-semibold ' +
+                'w-full sm:w-auto sm:min-w-[160px] rounded-lg px-4 py-2 text-sm font-semibold whitespace-nowrap ' +
                 (Boolean(generatingQuestions) || !canGenerateQuestions
                   ? 'bg-gray-300 text-gray-700 cursor-not-allowed'
                   : 'bg-gray-900 text-white hover:bg-gray-800')
