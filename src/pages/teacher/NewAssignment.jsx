@@ -1136,6 +1136,22 @@ export default function NewAssignment() {
                 setDecision={setAiDecision}
                 reason={aiDecisionReason}
                 setReason={setAiDecisionReason}
+                onApplyPrompt={(nextPrompt) => {
+                  setQuestionAt(selectedQuestionIndex, { prompt: String(nextPrompt || '') });
+                }}
+                onGenerateQuestions={() => handleGenerateOne(selectedQuestionIndex)}
+                canGenerateQuestions={(() => {
+                  const q = questions[selectedQuestionIndex] || makeEmptyQuestion();
+                  return Boolean(form.title) && Boolean(selectedTopicLabel) && Boolean(String(q.prompt || '').trim());
+                })()}
+                generateQuestionsDisabledReason={(() => {
+                  const q = questions[selectedQuestionIndex] || makeEmptyQuestion();
+                  if (!form.title) return 'Add a title to generate.';
+                  if (!selectedTopicLabel) return 'Select a topic to generate.';
+                  if (!String(q.prompt || '').trim()) return 'Add a prompt (or click Generate Prompt).';
+                  return '';
+                })()}
+                generatingQuestions={generatingByIndex.has(selectedQuestionIndex)}
                 onSave={({ decision, reason }) => {
                   const actor = (() => {
                     try {

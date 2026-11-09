@@ -180,6 +180,11 @@ export default function AIStudioPanel({
   reason,
   setReason,
   onSave,
+  onApplyPrompt,
+  onGenerateQuestions,
+  canGenerateQuestions,
+  generateQuestionsDisabledReason,
+  generatingQuestions,
 }) {
   const [activeStepId, setActiveStepId] = useState('topic');
   const [overrides, setOverrides] = useState({
@@ -243,6 +248,17 @@ export default function AIStudioPanel({
     );
     return blocks.join('\n\n');
   }, [context?.promptPreview, effective]);
+
+  const suggestedTeacherPrompt = useMemo(() => {
+    // This is meant to be the teacher's additional instruction (stored on the question),
+    // not the entire system prompt. Topic/difficulty/points are handled elsewhere.
+    const parts = [];
+    if (effective.rulesLabel) parts.push(effective.rulesLabel);
+    if (effective.marks) parts.push(`Worth ${effective.marks} marks.`);
+    if (effective.checks) parts.push(`Checks: ${effective.checks}`);
+    if (effective.reviewNotes) parts.push(`Teacher note: ${effective.reviewNotes}`);
+    return parts.join('\n');
+  }, [effective]);
 
   const plainEnglish = useMemo(() => {
     const t = effective.topicLabel ? ` on ${effective.topicLabel}` : '';
@@ -312,19 +328,32 @@ export default function AIStudioPanel({
             <button
               type="button"
               className="rounded-lg bg-violet-600 text-white px-3 py-2 text-sm font-semibold hover:bg-violet-500"
-              onClick={() => setActiveStepId('generate')}
+              onClick={() => {
+                setActiveStepId('generate');
+                onApplyPrompt?.(suggestedTeacherPrompt);
+              }}
             >
               Generate Prompt
             </button>
             <button
               type="button"
-              className="rounded-lg bg-gray-900 text-white px-3 py-2 text-sm font-semibold hover:bg-gray-800"
-              onClick={() => setActiveStepId('review')}
+              disabled={Boolean(generatingQuestions) || !canGenerateQuestions}
+              title={!canGenerateQuestions ? String(generateQuestionsDisabledReason || '') : ''}
+              className={
+                'rounded-lg px-3 py-2 text-sm font-semibold ' +
+                (Boolean(generatingQuestions) || !canGenerateQuestions
+                  ? 'bg-gray-300 text-gray-700 cursor-not-allowed'
+                  : 'bg-gray-900 text-white hover:bg-gray-800')
+              }
+              onClick={() => {
+                setActiveStepId('review');
+                onGenerateQuestions?.();
+              }}
             >
-              Generate Questions
+              {generatingQuestions ? 'Generating...' : 'Generate Questions'}
             </button>
             <div className="text-[11px] text-gray-500">
-              Demo: buttons highlight which step runs, and the preview shows the full prompt inputs.
+              Demo: Generate Prompt writes into the selected question. Generate Questions triggers generation.
             </div>
           </div>
         </div>
