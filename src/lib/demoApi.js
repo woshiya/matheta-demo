@@ -4,6 +4,8 @@ import {
   DEMO_LIVE_SESSIONS,
   DEMO_SUBMISSIONS,
   DEMO_USERS,
+  DEMO_CLASS_STUDENTS,
+  DEMO_EXTRA_STUDENTS,
 } from './mockDb';
 
 function jsonResponse(data, init) {
@@ -137,7 +139,7 @@ export async function demoFetch(path, options = {}) {
         id: c.id,
         name: c.name,
         subjects: c.subjects,
-        students: [DEMO_USERS.student],
+        students: DEMO_CLASS_STUDENTS?.[String(c.id)] || DEMO_CLASS_STUDENTS?.[c.id] || [DEMO_USERS.student],
       });
     }
   }
@@ -146,17 +148,17 @@ export async function demoFetch(path, options = {}) {
   {
     const m = path.match(/^\/api\/classes\/([^/]+)\/student-analytics$/);
     if (m && method === 'GET') {
+      const classId = Number(m[1]);
+      const students = (DEMO_CLASS_STUDENTS?.[String(classId)] || DEMO_CLASS_STUDENTS?.[classId] || [DEMO_USERS.student]).map((s, idx) => ({
+        student_id: s.id,
+        name: s.name,
+        email: s.email,
+        progress: idx === 0 && classId === 1 ? 64 : idx === 0 && classId === 2 ? 73 : 68,
+        completed_homework: classId === 1 ? 2 : 4,
+        missed_homework: classId === 1 ? 1 : 0,
+      }));
       return jsonResponse({
-        students: [
-          {
-            student_id: DEMO_USERS.student.id,
-            name: DEMO_USERS.student.name,
-            email: DEMO_USERS.student.email,
-            progress: 68,
-            completed_homework: 3,
-            missed_homework: 1,
-          },
-        ],
+        students,
       });
     }
   }
@@ -165,26 +167,135 @@ export async function demoFetch(path, options = {}) {
   {
     const m = path.match(/^\/api\/classes\/([^/]+)\/students\/([^/]+)\/domain-radar(\?.*)?$/);
     if (m && method === 'GET') {
+      const classId = Number(m[1]);
+      const studentId = String(m[2]);
+      const is3A = classId === 1;
+      const is4C = classId === 2;
+      const isStudent3A = studentId === String(DEMO_EXTRA_STUDENTS.student3A.id);
+      const isStudent4C = studentId === String(DEMO_EXTRA_STUDENTS.student4C.id);
+
+      // Slightly different profiles per class/student so the teacher view looks real.
+      const baseline = is3A && isStudent3A
+        ? [
+            { domain_key: 'number', percent: 66 },
+            { domain_key: 'algebra', percent: 52 },
+            { domain_key: 'measures', percent: 55 },
+            { domain_key: 'shape_space', percent: 44 },
+            { domain_key: 'data_handling', percent: 48 },
+          ]
+        : is4C && isStudent4C
+          ? [
+              { domain_key: 'number', percent: 58 },
+              { domain_key: 'algebra', percent: 60 },
+              { domain_key: 'measures', percent: 62 },
+              { domain_key: 'shape_space', percent: 54 },
+              { domain_key: 'data_handling', percent: 46 },
+            ]
+          : [
+              { domain_key: 'number', percent: 62 },
+              { domain_key: 'algebra', percent: 55 },
+              { domain_key: 'measures', percent: 58 },
+              { domain_key: 'shape_space', percent: 46 },
+              { domain_key: 'data_handling', percent: 40 },
+            ];
+
+      const current = is3A && isStudent3A
+        ? [
+            { domain_key: 'number', percent: 60 },
+            { domain_key: 'algebra', percent: 50 },
+            { domain_key: 'measures', percent: 51 },
+            { domain_key: 'shape_space', percent: 63 },
+            { domain_key: 'data_handling', percent: 70 },
+          ]
+        : is4C && isStudent4C
+          ? [
+              { domain_key: 'number', percent: 65 },
+              { domain_key: 'algebra', percent: 66 },
+              { domain_key: 'measures', percent: 68 },
+              { domain_key: 'shape_space', percent: 57 },
+              { domain_key: 'data_handling', percent: 54 },
+            ]
+          : [
+              { domain_key: 'number', percent: 58 },
+              { domain_key: 'algebra', percent: 50 },
+              { domain_key: 'measures', percent: 52 },
+              { domain_key: 'shape_space', percent: 60 },
+              { domain_key: 'data_handling', percent: 68 },
+            ];
+
       return jsonResponse({
         baseline: {
-          domainScores: [
-            { domain_key: 'number', percent: 62 },
-            { domain_key: 'algebra', percent: 55 },
-            { domain_key: 'measures', percent: 58 },
-            { domain_key: 'shape_space', percent: 46 },
-            { domain_key: 'data_handling', percent: 40 },
-          ],
+          domainScores: baseline,
         },
         current: {
-          domainScores: [
-            { domain_key: 'number', percent: 58 },
-            { domain_key: 'algebra', percent: 50 },
-            { domain_key: 'measures', percent: 52 },
-            { domain_key: 'shape_space', percent: 60 },
-            { domain_key: 'data_handling', percent: 68 },
-          ],
+          domainScores: current,
         },
       });
+    }
+  }
+
+  // Diagnostic centre demo endpoints
+  {
+    const m = path.match(/^\/api\/classes\/([^/]+)\/diagnostic-sessions\/active$/);
+    if (m && method === 'GET') {
+      const classId = Number(m[1]);
+      // Keep one deterministic session id per class.
+      return jsonResponse({
+        session: {
+          id: `DEMO-DIAG-${classId}`,
+          status: 'active',
+          ends_at: new Date(Date.now() + 45 * 60 * 1000).toISOString(),
+        },
+      });
+    }
+  }
+  {
+    const m = path.match(/^\/api\/classes\/([^/]+)\/diagnostic-sessions$/);
+    if (m && method === 'POST') {
+      const classId = Number(m[1]);
+      return jsonResponse({
+        session: {
+          id: `DEMO-DIAG-${classId}`,
+          status: 'active',
+          ends_at: new Date(Date.now() + 45 * 60 * 1000).toISOString(),
+        },
+      });
+    }
+  }
+  {
+    const m = path.match(/^\/api\/classes\/([^/]+)\/diagnostic-sessions\/([^/]+)\/close$/);
+    if (m && method === 'POST') {
+      return jsonResponse({
+        session: {
+          id: String(m[2]),
+          status: 'closed',
+          ends_at: new Date().toISOString(),
+        },
+      });
+    }
+  }
+  {
+    const m = path.match(/^\/api\/classes\/([^/]+)\/diagnostic-sessions\/([^/]+)\/results(\?.*)?$/);
+    if (m && method === 'GET') {
+      const classId = Number(m[1]);
+      const students = (DEMO_CLASS_STUDENTS?.[String(classId)] || DEMO_CLASS_STUDENTS?.[classId] || []).map((s) => {
+        const is3A = classId === 1;
+        const domain_scores = [
+          { domain_key: 'number', percent: is3A ? 62 : 70 },
+          { domain_key: 'algebra', percent: is3A ? 48 : 66 },
+          { domain_key: 'measures', percent: is3A ? 55 : 64 },
+          { domain_key: 'shape_space', percent: is3A ? 60 : 58 },
+          { domain_key: 'data_handling', percent: is3A ? 68 : 52 },
+        ];
+        return {
+          student_id: s.id,
+          student_name: s.name,
+          attempt_status: 'submitted',
+          submitted_at: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
+          domain_scores,
+        };
+      });
+      return jsonResponse({ students });
     }
   }
 

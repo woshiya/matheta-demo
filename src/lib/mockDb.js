@@ -16,6 +16,22 @@ export const DEMO_USERS = {
   },
 };
 
+// Extra named students for richer teacher-facing demo screens.
+export const DEMO_EXTRA_STUDENTS = {
+  student3A: {
+    id: 202,
+    name: 'Student 3A',
+    email: 'student3a@demo.com',
+    role: 'student',
+  },
+  student4C: {
+    id: 203,
+    name: 'Student 4C',
+    email: 'student4c@demo.com',
+    role: 'student',
+  },
+};
+
 export const DEMO_CLASSES = [
   {
     id: 1,
@@ -28,6 +44,12 @@ export const DEMO_CLASSES = [
     subjects: ['Mathematics'],
   },
 ];
+
+export const DEMO_CLASS_STUDENTS = {
+  // Class id -> list of student user objects.
+  1: [DEMO_EXTRA_STUDENTS.student3A],
+  2: [DEMO_EXTRA_STUDENTS.student4C],
+};
 
 export const DEMO_ASSIGNMENTS = [
   {
