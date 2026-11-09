@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   BookOpen,
   Eye,
@@ -17,13 +17,15 @@ function toneClasses(tone) {
   return { border: 'border-slate-500/40', text: 'text-slate-200' };
 }
 
-function StepCard({ title, subtitle, tone = 'slate', Icon, active }) {
+function StepCard({ title, subtitle, tone = 'slate', Icon, active, onClick }) {
   const t = toneClasses(tone);
   return (
-    <div
+    <button
+      type="button"
+      onClick={onClick}
       className={
-        'rounded-xl border px-3 py-3 bg-slate-900/60 ' +
-        (active ? 'ring-2 ring-white/10 ' : '') +
+        'text-left rounded-xl border px-3 py-3 bg-slate-900/60 transition ' +
+        (active ? 'ring-2 ring-white/10 ' : 'hover:bg-slate-900/80 ') +
         t.border
       }
     >
@@ -40,6 +42,132 @@ function StepCard({ title, subtitle, tone = 'slate', Icon, active }) {
           ) : null}
         </div>
       </div>
+    </button>
+  );
+}
+
+function StepDetail({ step, context, overrides, setOverrides }) {
+  const title = step?.title || 'Step';
+  const subtitle = step?.subtitle || '';
+  const id = step?.id || '';
+  const fieldCls =
+    'mt-1 w-full rounded-lg border border-slate-700 bg-slate-950/60 px-3 py-2 text-sm text-white placeholder:text-white/40';
+
+  return (
+    <div className="rounded-xl border border-slate-800 bg-slate-950 p-4">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <div className="text-xs font-semibold text-white">{title} Details</div>
+          <div className="mt-1 text-[11px] text-white/70">{subtitle || 'Edit how this step influences the AI prompt.'}</div>
+        </div>
+      </div>
+
+      {id === 'topic' ? (
+        <div className="mt-3">
+          <div className="text-[11px] font-semibold text-white/80">Topic</div>
+          <input
+            value={String(overrides?.topicLabel ?? context?.topicLabel ?? '')}
+            onChange={(e) => setOverrides((p) => ({ ...p, topicLabel: e.target.value }))}
+            className={fieldCls}
+            placeholder="e.g. Algebra - Linear Equations"
+          />
+          <div className="mt-2 text-[11px] text-white/60">This is shown in the Prompt Preview and summary.</div>
+        </div>
+      ) : null}
+
+      {id === 'classData' ? (
+        <div className="mt-3">
+          <div className="text-[11px] font-semibold text-white/80">Use Class Weakness Data</div>
+          <div className="mt-2 flex items-center gap-2">
+            {[{ id: true, label: 'On' }, { id: false, label: 'Off' }].map((opt) => (
+              <button
+                key={String(opt.id)}
+                type="button"
+                onClick={() => setOverrides((p) => ({ ...p, useClassData: opt.id }))}
+                className={
+                  'rounded-lg border px-3 py-2 text-sm font-semibold ' +
+                  (Boolean(overrides?.useClassData ?? context?.useClassData) === opt.id
+                    ? 'border-emerald-400/40 bg-emerald-500/10 text-emerald-100'
+                    : 'border-slate-700 bg-slate-950/40 text-white/70 hover:bg-slate-900/60')
+                }
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+          <div className="mt-2 text-[11px] text-white/60">
+            Demo: toggling this changes the prompt preview line "Use class weakness data".
+          </div>
+        </div>
+      ) : null}
+
+      {id === 'rules' ? (
+        <div className="mt-3">
+          <div className="text-[11px] font-semibold text-white/80">Rules / Style</div>
+          <input
+            value={String(overrides?.rulesLabel ?? context?.rulesLabel ?? 'HKDSE-aligned')}
+            onChange={(e) => setOverrides((p) => ({ ...p, rulesLabel: e.target.value }))}
+            className={fieldCls}
+            placeholder="e.g. HKDSE-aligned; show clear steps"
+          />
+          <div className="mt-2 text-[11px] text-white/60">This represents policy and formatting constraints.</div>
+        </div>
+      ) : null}
+
+      {id === 'generate' ? (
+        <div className="mt-3">
+          <div className="text-[11px] font-semibold text-white/80">Generation Controls</div>
+          <div className="mt-2 grid grid-cols-2 gap-2">
+            <div>
+              <div className="text-[11px] text-white/70">Difficulty label</div>
+              <input
+                value={String(overrides?.difficultyLabel ?? context?.difficultyLabel ?? '')}
+                onChange={(e) => setOverrides((p) => ({ ...p, difficultyLabel: e.target.value }))}
+                className={fieldCls}
+                placeholder="easy"
+              />
+            </div>
+            <div>
+              <div className="text-[11px] text-white/70">Marks</div>
+              <input
+                inputMode="numeric"
+                value={String(overrides?.marks ?? '')}
+                onChange={(e) => setOverrides((p) => ({ ...p, marks: e.target.value }))}
+                className={fieldCls}
+                placeholder="2"
+              />
+            </div>
+          </div>
+          <div className="mt-2 text-[11px] text-white/60">These settings should explain what the model is being asked to produce.</div>
+        </div>
+      ) : null}
+
+      {id === 'check' ? (
+        <div className="mt-3">
+          <div className="text-[11px] font-semibold text-white/80">Checks (Guardrails)</div>
+          <textarea
+            value={String(overrides?.checks ?? 'HKDSE style; correct math; clear working; no trick wording.')}
+            onChange={(e) => setOverrides((p) => ({ ...p, checks: e.target.value }))}
+            className={fieldCls}
+            rows={3}
+          />
+          <div className="mt-2 text-[11px] text-white/60">These are the quality rules the AI must satisfy.</div>
+        </div>
+      ) : null}
+
+      {id === 'review' ? (
+        <div className="mt-3">
+          <div className="text-[11px] font-semibold text-white/80">Teacher Review</div>
+          <textarea
+            value={String(overrides?.reviewNotes ?? '')}
+            onChange={(e) => setOverrides((p) => ({ ...p, reviewNotes: e.target.value }))}
+            className={fieldCls}
+            rows={3}
+            placeholder="Optional notes for why you approve/edit/reject."
+          />
+          <div className="mt-2 text-[11px] text-white/60">This is separate from the audit reason below, but can be included in the prompt preview.</div>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -53,6 +181,22 @@ export default function AIStudioPanel({
   setReason,
   onSave,
 }) {
+  const [activeStepId, setActiveStepId] = useState('topic');
+  const [overrides, setOverrides] = useState({
+    topicLabel: undefined,
+    useClassData: undefined,
+    rulesLabel: undefined,
+    difficultyLabel: undefined,
+    marks: '',
+    checks: 'HKDSE style; correct math; clear working; no trick wording.',
+    reviewNotes: '',
+  });
+
+  useEffect(() => {
+    // Keep the panel feeling responsive when question/topic changes.
+    setActiveStepId('topic');
+  }, [context?.topicLabel, context?.difficultyLabel]);
+
   const steps = useMemo(
     () => [
       { id: 'topic', title: 'Topic', subtitle: context?.topicLabel || 'Not set', tone: 'blue', Icon: BookOpen },
@@ -65,12 +209,49 @@ export default function AIStudioPanel({
     [context]
   );
 
+  const activeStep = useMemo(() => steps.find((s) => s.id === activeStepId) || steps[0], [steps, activeStepId]);
+
+  const effective = useMemo(() => {
+    const topicLabel = String(overrides.topicLabel ?? context?.topicLabel ?? '').trim();
+    const useClassData = Boolean(overrides.useClassData ?? context?.useClassData);
+    const rulesLabel = String(overrides.rulesLabel ?? context?.rulesLabel ?? 'HKDSE-aligned').trim();
+    const difficultyLabel = String(overrides.difficultyLabel ?? context?.difficultyLabel ?? '').trim();
+    const marks = String(overrides.marks || '').trim();
+    const checks = String(overrides.checks || '').trim();
+    const reviewNotes = String(overrides.reviewNotes || '').trim();
+    return { topicLabel, useClassData, rulesLabel, difficultyLabel, marks, checks, reviewNotes };
+  }, [context, overrides]);
+
+  const computedPromptPreview = useMemo(() => {
+    // If parent gives a promptPreview string, treat it as the base template and
+    // append the step details to make the process visible.
+    const base = String(context?.promptPreview || '').trim();
+    const blocks = [];
+    if (base) blocks.push(base);
+    blocks.push(
+      [
+        '---',
+        'Workflow Inputs (editable demo):',
+        `Topic: ${effective.topicLabel || '-'}`,
+        `Use class weakness data: ${effective.useClassData ? 'Yes' : 'No'}`,
+        `Rules: ${effective.rulesLabel || '-'}`,
+        `Difficulty: ${effective.difficultyLabel || '-'}`,
+        `Marks: ${effective.marks || '-'}`,
+        effective.checks ? `Checks: ${effective.checks}` : null,
+        effective.reviewNotes ? `Teacher notes: ${effective.reviewNotes}` : null,
+      ].filter(Boolean).join('\n')
+    );
+    return blocks.join('\n\n');
+  }, [context?.promptPreview, effective]);
+
   const plainEnglish = useMemo(() => {
-    const t = context?.topicLabel ? ` on ${context.topicLabel}` : '';
-    const d = context?.difficultyLabel ? ` (${context.difficultyLabel})` : '';
-    const c = context?.useClassData ? ' It will use class weakness data.' : '';
-    return `The AI will create${d} question${t}. It will follow HKDSE style.${c} Teacher approval is required.`;
-  }, [context]);
+    const t = effective.topicLabel ? ` on ${effective.topicLabel}` : '';
+    const d = effective.difficultyLabel ? ` (${effective.difficultyLabel})` : '';
+    const c = effective.useClassData ? ' It will use class weakness data.' : '';
+    const r = effective.rulesLabel ? ` It will follow: ${effective.rulesLabel}.` : '';
+    const m = effective.marks ? ` Target marks: ${effective.marks}.` : '';
+    return `The AI will create${d} question${t}.${r}${m}${c} Teacher approval is required.`;
+  }, [effective]);
 
   return (
     <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
@@ -102,11 +283,14 @@ export default function AIStudioPanel({
                 subtitle={s.subtitle}
                 tone={s.tone}
                 Icon={s.Icon}
-                active={idx === 5}
+                active={s.id === activeStepId}
+                onClick={() => setActiveStepId(s.id)}
               />
             ))}
           </div>
         </div>
+
+        <StepDetail step={activeStep} context={context} overrides={overrides} setOverrides={setOverrides} />
 
         <div className="rounded-xl border border-gray-200 bg-gray-50 p-3">
           <div className="text-xs font-semibold text-gray-700">Teacher</div>
@@ -121,8 +305,28 @@ export default function AIStudioPanel({
         <div className="rounded-xl border border-gray-200 bg-white p-3">
           <div className="text-xs font-semibold text-gray-700">Prompt Preview</div>
           <pre className="mt-2 rounded-lg border border-gray-200 bg-gray-900 text-gray-100 p-3 text-xs overflow-auto whitespace-pre-wrap">
-{String(context?.promptPreview || 'No prompt preview available.')}
+ {computedPromptPreview || 'No prompt preview available.'}
           </pre>
+
+          <div className="mt-3 flex items-center gap-2">
+            <button
+              type="button"
+              className="rounded-lg bg-violet-600 text-white px-3 py-2 text-sm font-semibold hover:bg-violet-500"
+              onClick={() => setActiveStepId('generate')}
+            >
+              Generate Prompt
+            </button>
+            <button
+              type="button"
+              className="rounded-lg bg-gray-900 text-white px-3 py-2 text-sm font-semibold hover:bg-gray-800"
+              onClick={() => setActiveStepId('review')}
+            >
+              Generate Questions
+            </button>
+            <div className="text-[11px] text-gray-500">
+              Demo: buttons highlight which step runs, and the preview shows the full prompt inputs.
+            </div>
+          </div>
         </div>
 
         <div className="rounded-xl border border-gray-200 bg-white p-3">
