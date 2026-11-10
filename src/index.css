@@ -17,7 +17,7 @@ body,
   min-width: 0;
 }
 
-/* Wrap long content rather than cutting it off */
+/* Keep default wrapping; use utilities for long IDs/emails instead. */
 body {
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
 }

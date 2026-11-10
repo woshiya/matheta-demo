@@ -33,7 +33,7 @@ function ProtectedRoute({ children, role }) {
   const user = JSON.parse(localStorage.getItem("user"));
 
   if (!user) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   if (role && user.role !== role) {
@@ -41,6 +41,18 @@ function ProtectedRoute({ children, role }) {
   }
 
   return children;
+}
+
+function HomeRedirect() {
+  try {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const role = String(user?.role || "").toLowerCase();
+    if (role === "teacher") return <Navigate to="/teacher" replace />;
+    if (role === "student") return <Navigate to="/student" replace />;
+  } catch {
+    // ignore
+  }
+  return <Navigate to="/login" replace />;
 }
 
 function App() {
@@ -52,7 +64,7 @@ function App() {
         <Route path="/product" element={<ProductPage />} />
 
         {/* Demo entry */}
-        <Route path="/" element={<Navigate to="/teacher" replace />} />
+        <Route path="/" element={<HomeRedirect />} />
         <Route path="/login" element={<Login />} />
 
         {/* ✅ Student Routes */}

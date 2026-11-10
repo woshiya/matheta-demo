@@ -68,11 +68,8 @@ function BrowserFrame({ title, children }) {
 }
 
 function PlaceholderBadge() {
-  return (
-    <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-semibold text-slate-700">
-      Product preview placeholder
-    </span>
-  );
+  // Kept for layout compatibility (but the label is hidden in UI).
+  return null;
 }
 
 function Check({ children }) {
@@ -191,8 +188,6 @@ export default function ProductPage() {
                 </SecondaryButton>
               </div>
 
-              <div className="mt-3 text-[11px] text-slate-500">Demo placeholder</div>
-
               <div className="mt-6 flex flex-wrap gap-2">
                 {["Explainable", "Teacher-controlled", "HKDSE maths focus"].map((x) => (
                   <span
@@ -214,7 +209,11 @@ export default function ProductPage() {
                     <div className="text-sm font-semibold text-slate-900">Student signal table</div>
                     <div className="mt-1 text-xs text-slate-600">Live classroom signals with evidence attached.</div>
                   </div>
-                  <PlaceholderBadge />
+                  <img
+                    src="/assets/previews/live-signals.png"
+                    alt="Matheta product preview"
+                    className="h-8 w-auto rounded-md border border-slate-200 bg-white"
+                  />
                 </div>
 
                 <div className="mt-4 grid grid-cols-1 lg:grid-cols-5 gap-4">
@@ -382,7 +381,11 @@ export default function ProductPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
           <div className="rounded-3xl border border-slate-200 bg-sky-50 p-6">
             <BrowserFrame title="Live analytics · Student signals">
-              <PlaceholderBadge />
+              <img
+                src="/assets/previews/live-analytics.png"
+                alt="Matheta live analytics preview"
+                className="h-8 w-auto rounded-md border border-slate-200 bg-white"
+              />
               <div className="mt-3 rounded-lg border border-slate-200 bg-white p-3">
                 <div className="text-xs font-semibold text-slate-700">Signal table</div>
                 <div className="mt-2 text-sm text-slate-600">
@@ -438,7 +441,11 @@ export default function ProductPage() {
                   <div className="text-sm font-semibold text-slate-900">Diagnostic overview</div>
                   <div className="mt-1 text-xs text-slate-600">Domains mapped to HKDSE-aligned categories.</div>
                 </div>
-                <PlaceholderBadge />
+                <img
+                  src="/assets/previews/diagnostic-radar.png"
+                  alt="Matheta diagnostic preview"
+                  className="h-8 w-auto rounded-md border border-slate-200 bg-white"
+                />
               </div>
 
               <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
@@ -464,7 +471,11 @@ export default function ProductPage() {
 
           <div className="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-6">
             <BrowserFrame title="AI Studio · Workflow overview">
-              <PlaceholderBadge />
+              <img
+                src="/assets/previews/ai-studio-workflow.png"
+                alt="Matheta AI Studio workflow preview"
+                className="h-8 w-auto rounded-md border border-slate-200 bg-white"
+              />
               <div className="mt-3 grid grid-cols-2 gap-2">
                 {[
                   ["Topic", "Algebra - Linear Equations"],
@@ -483,7 +494,11 @@ export default function ProductPage() {
             </BrowserFrame>
 
             <BrowserFrame title="AI Studio · Prompt review">
-              <PlaceholderBadge />
+              <img
+                src="/assets/previews/ai-studio-prompt.png"
+                alt="Matheta prompt preview"
+                className="h-8 w-auto rounded-md border border-slate-200 bg-white"
+              />
               <div className="mt-3 rounded-xl border border-slate-200 bg-slate-950 p-4 text-white">
                 <div className="text-[11px] font-semibold text-white/70">Prompt Preview</div>
                 <div className="mt-2 whitespace-pre-wrap text-sm text-white/90 leading-relaxed font-mono">
@@ -529,7 +544,11 @@ export default function ProductPage() {
                     Review trigger signal, students affected and reasoning before acting.
                   </div>
                 </div>
-                <PlaceholderBadge />
+                <img
+                  src="/assets/previews/intervention.png"
+                  alt="Matheta intervention preview"
+                  className="h-8 w-auto rounded-md border border-slate-200 bg-white"
+                />
               </div>
               <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-3">
                 <div className="text-xs font-semibold text-slate-700">AI Reasoning Summary</div>
@@ -603,7 +622,11 @@ export default function ProductPage() {
 
             <div>
               <BrowserFrame title="Teacher override · Approve / Edit / Reject">
-                <PlaceholderBadge />
+                <img
+                  src="/assets/previews/teacher-override.png"
+                  alt="Matheta teacher override preview"
+                  className="h-8 w-auto rounded-md border border-slate-200 bg-white"
+                />
                 <div className="mt-3 rounded-xl border border-slate-200 bg-white p-4">
                   <div className="text-xs font-semibold text-slate-700">Teacher Override</div>
                   <div className="mt-3 grid grid-cols-3 gap-2">
@@ -686,7 +709,7 @@ export default function ProductPage() {
               <PrimaryButton onClick={() => navigate("/login")} className="sm:min-w-[220px]">
                 Try Demo →
               </PrimaryButton>
-              <div className="text-[11px] text-slate-500 flex items-center">Demo placeholder — link to be added</div>
+              <div className="text-[11px] text-slate-500 flex items-center">Transparent demo flow</div>
             </div>
           </div>
         </div>
@@ -700,7 +723,6 @@ export default function ProductPage() {
               <LogoMark />
               <div className="mt-3 text-sm text-slate-700">Classroom intelligence. Teacher-led decisions.</div>
               <div className="mt-2 text-xs text-slate-500">Waiva Oshiya · THEi</div>
-              <div className="mt-1 text-xs text-slate-500">HKICT Student Innovation Awards 2026 project</div>
             </div>
 
             <div className="flex items-center gap-6 text-sm font-semibold text-slate-700">
