@@ -219,38 +219,24 @@ export default function ProductPage() {
                       <div className="text-[11px] font-semibold text-slate-500">Topic: Linear Equations</div>
                     </div>
                     <div className="mt-3 overflow-hidden rounded-lg border border-slate-200 bg-white">
-                      <div className="grid grid-cols-6 gap-0 border-b border-slate-100 bg-slate-50 text-[11px] font-semibold text-slate-600">
-                        {[
-                          "Student",
-                          "Attempts",
-                          "Accuracy",
-                          "Time",
-                          "Mistakes",
-                          "Support",
-                        ].map((h) => (
-                          <div key={h} className="px-3 py-2">
-                            {h}
-                          </div>
-                        ))}
+                      <div className="grid grid-cols-[1fr_auto] gap-0 border-b border-slate-100 bg-slate-50 text-[11px] font-semibold text-slate-600">
+                        <div className="px-3 py-2">Student</div>
+                        <div className="px-3 py-2 text-right whitespace-nowrap">Attempts · Accuracy</div>
                       </div>
                       {[
-                        { s: "Emma", a: 7, acc: "15%", t: "2m 10s", m: "Sign errors", sup: "1:1" },
-                        { s: "Andy", a: 6, acc: "8%", t: "2m 45s", m: "Transposition", sup: "Scaffold" },
-                        { s: "Iris", a: 5, acc: "20%", t: "1m 55s", m: "Order", sup: "Practice" },
+                        { s: "Emma", a: 7, acc: "15%" },
+                        { s: "Andy", a: 6, acc: "8%" },
+                        { s: "Iris", a: 5, acc: "20%" },
                       ].map((r) => (
                         <div
                           key={r.s}
-                          className="grid grid-cols-6 text-[12px] text-slate-800 border-b last:border-b-0 border-slate-100"
+                          className="grid grid-cols-[1fr_auto] items-center text-[12px] text-slate-800 border-b last:border-b-0 border-slate-100"
                         >
                           <div className="px-3 py-2 font-semibold">{r.s}</div>
-                          <div className="px-3 py-2">{r.a}</div>
-                          <div className="px-3 py-2 font-semibold text-rose-700">{r.acc}</div>
-                          <div className="px-3 py-2">{r.t}</div>
-                          <div className="px-3 py-2">{r.m}</div>
-                          <div className="px-3 py-2">
-                            <span className="inline-flex rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-semibold text-slate-700">
-                              {r.sup}
-                            </span>
+                          <div className="px-3 py-2 text-right font-semibold tabular-nums whitespace-nowrap">
+                            <span className="text-slate-700">{r.a}</span>
+                            <span className="text-slate-400"> · </span>
+                            <span className="text-rose-700">{r.acc}</span>
                           </div>
                         </div>
                       ))}
