@@ -44,15 +44,9 @@ function ProtectedRoute({ children, role }) {
 }
 
 function HomeRedirect() {
-  try {
-    const user = JSON.parse(localStorage.getItem("user"));
-    const role = String(user?.role || "").toLowerCase();
-    if (role === "teacher") return <Navigate to="/teacher" replace />;
-    if (role === "student") return <Navigate to="/student" replace />;
-  } catch {
-    // ignore
-  }
-  return <Navigate to="/login" replace />;
+  // Always start at the product page. The demo is reachable via Try Demo.
+  // (If a user is already logged in, they can still access /teacher or /student.)
+  return <Navigate to="/product" replace />;
 }
 
 function App() {
