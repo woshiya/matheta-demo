@@ -209,11 +209,7 @@ export default function ProductPage() {
                     <div className="text-sm font-semibold text-slate-900">Student signal table</div>
                     <div className="mt-1 text-xs text-slate-600">Live classroom signals with evidence attached.</div>
                   </div>
-                  <img
-                    src="/assets/previews/live-signals.png"
-                    alt="Matheta product preview"
-                    className="h-8 w-auto rounded-md border border-slate-200 bg-white"
-                  />
+                  {/* Screenshot slot: intentionally empty until real screenshots are added. */}
                 </div>
 
                 <div className="mt-4 grid grid-cols-1 lg:grid-cols-5 gap-4">
@@ -381,11 +377,7 @@ export default function ProductPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
           <div className="rounded-3xl border border-slate-200 bg-sky-50 p-6">
             <BrowserFrame title="Live analytics · Student signals">
-              <img
-                src="/assets/previews/live-analytics.png"
-                alt="Matheta live analytics preview"
-                className="h-8 w-auto rounded-md border border-slate-200 bg-white"
-              />
+              {/* Screenshot slot: intentionally empty until real screenshots are added. */}
               <div className="mt-3 rounded-lg border border-slate-200 bg-white p-3">
                 <div className="text-xs font-semibold text-slate-700">Signal table</div>
                 <div className="mt-2 text-sm text-slate-600">
@@ -441,11 +433,7 @@ export default function ProductPage() {
                   <div className="text-sm font-semibold text-slate-900">Diagnostic overview</div>
                   <div className="mt-1 text-xs text-slate-600">Domains mapped to HKDSE-aligned categories.</div>
                 </div>
-                <img
-                  src="/assets/previews/diagnostic-radar.png"
-                  alt="Matheta diagnostic preview"
-                  className="h-8 w-auto rounded-md border border-slate-200 bg-white"
-                />
+                {/* Screenshot slot: intentionally empty until real screenshots are added. */}
               </div>
 
               <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
@@ -471,11 +459,7 @@ export default function ProductPage() {
 
           <div className="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-6">
             <BrowserFrame title="AI Studio · Workflow overview">
-              <img
-                src="/assets/previews/ai-studio-workflow.png"
-                alt="Matheta AI Studio workflow preview"
-                className="h-8 w-auto rounded-md border border-slate-200 bg-white"
-              />
+              {/* Screenshot slot: intentionally empty until real screenshots are added. */}
               <div className="mt-3 grid grid-cols-2 gap-2">
                 {[
                   ["Topic", "Algebra - Linear Equations"],
@@ -494,11 +478,7 @@ export default function ProductPage() {
             </BrowserFrame>
 
             <BrowserFrame title="AI Studio · Prompt review">
-              <img
-                src="/assets/previews/ai-studio-prompt.png"
-                alt="Matheta prompt preview"
-                className="h-8 w-auto rounded-md border border-slate-200 bg-white"
-              />
+              {/* Screenshot slot: intentionally empty until real screenshots are added. */}
               <div className="mt-3 rounded-xl border border-slate-200 bg-slate-950 p-4 text-white">
                 <div className="text-[11px] font-semibold text-white/70">Prompt Preview</div>
                 <div className="mt-2 whitespace-pre-wrap text-sm text-white/90 leading-relaxed font-mono">
@@ -544,11 +524,7 @@ export default function ProductPage() {
                     Review trigger signal, students affected and reasoning before acting.
                   </div>
                 </div>
-                <img
-                  src="/assets/previews/intervention.png"
-                  alt="Matheta intervention preview"
-                  className="h-8 w-auto rounded-md border border-slate-200 bg-white"
-                />
+                {/* Screenshot slot: intentionally empty until real screenshots are added. */}
               </div>
               <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-3">
                 <div className="text-xs font-semibold text-slate-700">AI Reasoning Summary</div>
@@ -622,11 +598,7 @@ export default function ProductPage() {
 
             <div>
               <BrowserFrame title="Teacher override · Approve / Edit / Reject">
-                <img
-                  src="/assets/previews/teacher-override.png"
-                  alt="Matheta teacher override preview"
-                  className="h-8 w-auto rounded-md border border-slate-200 bg-white"
-                />
+                {/* Screenshot slot: intentionally empty until real screenshots are added. */}
                 <div className="mt-3 rounded-xl border border-slate-200 bg-white p-4">
                   <div className="text-xs font-semibold text-slate-700">Teacher Override</div>
                   <div className="mt-3 grid grid-cols-3 gap-2">
