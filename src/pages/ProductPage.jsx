@@ -175,7 +175,7 @@ export default function ProductPage() {
 
               <div className="mt-7 flex flex-col sm:flex-row gap-3">
                 <PrimaryButton onClick={() => navigate("/login")} className="sm:min-w-[160px]">
-                  Try Demo 2
+                  Try Demo
                 </PrimaryButton>
                 <SecondaryButton
                   className="sm:min-w-[160px]"
@@ -184,7 +184,7 @@ export default function ProductPage() {
                     el?.scrollIntoView({ behavior: "smooth", block: "start" });
                   }}
                 >
-                  Explore features 3
+                  Explore features
                 </SecondaryButton>
               </div>
 
